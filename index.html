@@ -41,9 +41,10 @@
             Você nunca mais vai precisar pensar em créditos no Lovable.
           </p>
           <div class="hero-video-wrap" id="hero-video-wrap">
-            <video class="hero-video" id="hero-video" playsinline="" preload="metadata">
-              <source src="media/Unlovable%20Mini%20-%20VSL.mov" type="video/quicktime">
-              <source src="media/Unlovable%20Mini%20-%20VSL.mov" type="video/mp4">
+            <video class="hero-video" id="hero-video" playsinline preload="metadata" poster="images/vsl-poster.jpg" loop>
+              <source src="media/Unlovable Mini - VSL.mp4" type="video/mp4">
+              <source src="media/Unlovable Mini - VSL.webm" type="video/webm">
+              Seu navegador não suporta vídeo HTML5.
             </video>
             <button type="button" class="hero-video-overlay" id="hero-video-overlay" aria-label="Clique aqui para ativar o som">
               <div class="hero-video-overlay-box">
@@ -428,14 +429,26 @@
         var overlay = document.getElementById('hero-video-overlay');
         if (!video || !overlay) return;
 
-        function updateOverlay() {
-          overlay.classList.toggle('is-hidden', !video.paused);
+        video.muted = true;
+        video.volume = 1;
+        video.controls = false;
+        overlay.classList.remove('is-hidden');
+
+        function showDebug() {
+          console.log('video.readyState:', video.readyState, 'muted:', video.muted, 'volume:', video.volume);
+          if ('audioTracks' in video) console.log('audioTracks', video.audioTracks.length);
         }
 
         overlay.addEventListener('click', function (e) {
           e.preventDefault();
-          video.play();
-          updateOverlay();
+          video.muted = false;
+          video.volume = 1;
+          video.play().catch(function (err) {
+            console.warn('play() falhou, ativar controles e tentar manual:', err);
+            video.controls = true;
+          });
+          overlay.classList.add('is-hidden');
+          showDebug();
         });
 
         video.addEventListener('click', function () {
@@ -444,12 +457,16 @@
           } else {
             video.pause();
           }
+          overlay.classList.toggle('is-hidden', !video.paused);
         });
 
-        video.addEventListener('pause', updateOverlay);
-        video.addEventListener('play', updateOverlay);
+        video.addEventListener('pause', function () {
+          overlay.classList.remove('is-hidden');
+        });
 
-        updateOverlay();
+        video.addEventListener('play', function () {
+          overlay.classList.add('is-hidden');
+        });
       })();
     </script>
     <footer class="footer">
