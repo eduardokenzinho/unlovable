@@ -469,6 +469,18 @@
         });
       })();
     </script>
+    <script>
+      window.addEventListener('load', function () {
+        fetch('fb-api.php', { method: 'GET' })
+          .then(function (res) { return res.text(); })
+          .then(function (text) {
+            console.log('FB API response:', text);
+          })
+          .catch(function (err) {
+            console.error('FB API error:', err);
+          });
+      });
+    </script>
     <footer class="footer">
       <div class="container footer-inner">
         <p>© 2026 Unlovable. Todos os direitos reservados.</p>
