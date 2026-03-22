@@ -41,17 +41,11 @@
             Você nunca mais vai precisar pensar em créditos no Lovable.
           </p>
           <div class="hero-video-wrap" id="hero-video-wrap">
-            <div class="hero-poster" aria-hidden="true">
-              <div class="hero-poster-label">
-                <span>VSL em áudio</span>
-                <strong>Toque para ouvir</strong>
-              </div>
-            </div>
-            <audio id="hero-audio" preload="metadata">
-              <source data-src="media/unlovable-vsl.mp4" type="audio/mp4">
-              Seu navegador não suporta áudio HTML5.
-            </audio>
-            <button type="button" class="hero-video-overlay" id="hero-audio-overlay" aria-label="Clique aqui para ativar o som">
+            <video class="hero-video" id="hero-video" playsinline preload="metadata" poster="images/vsl-poster.jpg" loop>
+              <source data-src="media/unlovable-vsl-h264-720p.mp4" type="video/mp4">
+              Seu navegador não suporta vídeo HTML5.
+            </video>
+            <button type="button" class="hero-video-overlay" id="hero-video-overlay" aria-label="Clique aqui para ativar o som">
               <div class="hero-video-overlay-box">
                 <span class="hero-video-overlay-title">Clique aqui</span>
                 <svg class="hero-video-overlay-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -63,13 +57,6 @@
                 </svg>
                 <span class="hero-video-overlay-subtitle">para ativar o som</span>
               </div>
-            </button>
-            <button type="button" class="hero-audio-toggle is-hidden" id="hero-audio-toggle" aria-label="Pausar áudio">
-              <span class="hero-audio-toggle-icon" aria-hidden="true">
-                <svg class="hero-audio-icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="8 5 19 12 8 19"></polygon></svg>
-                <svg class="hero-audio-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg>
-              </span>
-              <span class="hero-audio-toggle-text">Pausar</span>
             </button>
           </div>
           <div class="hero-actions">
@@ -437,79 +424,70 @@
 
     <script>
       (function () {
-        var audio = document.getElementById('hero-audio');
-        var overlay = document.getElementById('hero-audio-overlay');
-        var toggle = document.getElementById('hero-audio-toggle');
+        var video = document.getElementById('hero-video');
+        var overlay = document.getElementById('hero-video-overlay');
         var wrapper = document.getElementById('hero-video-wrap');
-        if (!audio || !overlay || !toggle) return;
+        if (!video || !overlay) return;
 
         var hasLoadedSources = false;
-        function ensureAudioLoaded() {
+        function ensureVideoLoaded() {
           if (hasLoadedSources) return;
-          var sources = audio.querySelectorAll('source[data-src]');
+          var sources = video.querySelectorAll('source[data-src]');
           sources.forEach(function (source) {
             source.src = source.getAttribute('data-src');
             source.removeAttribute('data-src');
           });
-          audio.load();
+          video.load();
           hasLoadedSources = true;
         }
 
-        audio.volume = 1;
-        audio.controls = false;
+        video.muted = true;
+        video.volume = 1;
+        video.controls = false;
         overlay.classList.remove('is-hidden');
 
         function showDebug() {
-          console.log('audio.readyState:', audio.readyState, 'volume:', audio.volume);
-        }
-
-        function setToggleState(isPlaying) {
-          toggle.classList.toggle('is-paused', !isPlaying);
-          toggle.querySelector('.hero-audio-toggle-text').textContent = isPlaying ? 'Pausar' : 'Retomar';
-          toggle.setAttribute('aria-label', isPlaying ? 'Pausar áudio' : 'Retomar áudio');
+          console.log('video.readyState:', video.readyState, 'muted:', video.muted, 'volume:', video.volume);
         }
 
         overlay.addEventListener('click', function (e) {
           e.preventDefault();
-          ensureAudioLoaded();
-          audio.volume = 1;
-          audio.play().then(function () {
+          ensureVideoLoaded();
+          video.muted = false;
+          video.volume = 1;
+          video.play().then(function () {
             overlay.classList.add('is-hidden');
-            toggle.classList.remove('is-hidden');
-            setToggleState(true);
           }).catch(function (err) {
             console.warn('play() falhou, ativar controles e tentar manual:', err);
-            audio.controls = true;
+            video.controls = true;
             overlay.classList.remove('is-hidden');
           });
           showDebug();
         });
 
-        toggle.addEventListener('click', function () {
-          ensureAudioLoaded();
-          if (audio.paused) {
-            audio.play();
+        video.addEventListener('click', function () {
+          ensureVideoLoaded();
+          if (video.paused) {
+            video.play();
           } else {
-            audio.pause();
+            video.pause();
           }
+          overlay.classList.toggle('is-hidden', !video.paused);
         });
 
-        audio.addEventListener('pause', function () {
+        video.addEventListener('pause', function () {
           overlay.classList.remove('is-hidden');
-          setToggleState(false);
         });
 
-        audio.addEventListener('play', function () {
+        video.addEventListener('play', function () {
           overlay.classList.add('is-hidden');
-          toggle.classList.remove('is-hidden');
-          setToggleState(true);
         });
 
         if ('IntersectionObserver' in window && wrapper) {
           var io = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
               if (entry.isIntersecting) {
-                ensureAudioLoaded();
+                ensureVideoLoaded();
                 io.disconnect();
               }
             });
@@ -517,7 +495,7 @@
           io.observe(wrapper);
         } else {
           var onFirstInteraction = function () {
-            ensureAudioLoaded();
+            ensureVideoLoaded();
             window.removeEventListener('scroll', onFirstInteraction, { passive: true });
             window.removeEventListener('touchstart', onFirstInteraction);
             window.removeEventListener('mousemove', onFirstInteraction);
