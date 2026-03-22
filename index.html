@@ -41,12 +41,12 @@
             Você nunca mais vai precisar pensar em créditos no Lovable.
           </p>
           <div class="hero-video-wrap" id="hero-video-wrap">
-            <video class="hero-video" id="hero-video" playsinline preload="none" poster="images/vsl-poster.svg" loop>
-              <source data-src="media/Unlovable Mini - VSL - Copia.mp4" type="video/mp4">
-              <source data-src="media/Unlovable Mini - VSL.webm" type="video/webm">
-              Seu navegador não suporta vídeo HTML5.
-            </video>
-            <button type="button" class="hero-video-overlay" id="hero-video-overlay" aria-label="Clique aqui para ativar o som">
+            <div class="hero-poster" aria-hidden="true"></div>
+            <audio id="hero-audio" preload="metadata">
+              <source data-src="media/unlovable-vsl.mp4" type="audio/mp4">
+              Seu navegador não suporta áudio HTML5.
+            </audio>
+            <button type="button" class="hero-video-overlay" id="hero-audio-overlay" aria-label="Clique aqui para ativar o som">
               <div class="hero-video-overlay-box">
                 <span class="hero-video-overlay-title">Clique aqui</span>
                 <svg class="hero-video-overlay-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -425,61 +425,50 @@
 
     <script>
       (function () {
-        var video = document.getElementById('hero-video');
-        var overlay = document.getElementById('hero-video-overlay');
+        var audio = document.getElementById('hero-audio');
+        var overlay = document.getElementById('hero-audio-overlay');
         var wrapper = document.getElementById('hero-video-wrap');
-        if (!video || !overlay) return;
+        if (!audio || !overlay) return;
 
         var hasLoadedSources = false;
-        function ensureVideoLoaded() {
+        function ensureAudioLoaded() {
           if (hasLoadedSources) return;
-          var sources = video.querySelectorAll('source[data-src]');
+          var sources = audio.querySelectorAll('source[data-src]');
           sources.forEach(function (source) {
             source.src = source.getAttribute('data-src');
             source.removeAttribute('data-src');
           });
-          video.load();
+          audio.load();
           hasLoadedSources = true;
         }
 
-        video.muted = true;
-        video.volume = 1;
-        video.controls = false;
+        audio.volume = 1;
+        audio.controls = false;
         overlay.classList.remove('is-hidden');
 
         function showDebug() {
-          console.log('video.readyState:', video.readyState, 'muted:', video.muted, 'volume:', video.volume);
-          if ('audioTracks' in video) console.log('audioTracks', video.audioTracks.length);
+          console.log('audio.readyState:', audio.readyState, 'volume:', audio.volume);
         }
 
         overlay.addEventListener('click', function (e) {
           e.preventDefault();
-          ensureVideoLoaded();
-          video.muted = false;
-          video.volume = 1;
-          video.play().catch(function (err) {
+          ensureAudioLoaded();
+          audio.volume = 1;
+          audio.play().then(function () {
+            overlay.classList.add('is-hidden');
+          }).catch(function (err) {
             console.warn('play() falhou, ativar controles e tentar manual:', err);
-            video.controls = true;
+            audio.controls = true;
+            overlay.classList.remove('is-hidden');
           });
-          overlay.classList.add('is-hidden');
           showDebug();
         });
 
-        video.addEventListener('click', function () {
-          ensureVideoLoaded();
-          if (video.paused) {
-            video.play();
-          } else {
-            video.pause();
-          }
-          overlay.classList.toggle('is-hidden', !video.paused);
-        });
-
-        video.addEventListener('pause', function () {
+        audio.addEventListener('pause', function () {
           overlay.classList.remove('is-hidden');
         });
 
-        video.addEventListener('play', function () {
+        audio.addEventListener('play', function () {
           overlay.classList.add('is-hidden');
         });
 
@@ -487,7 +476,7 @@
           var io = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
               if (entry.isIntersecting) {
-                ensureVideoLoaded();
+                ensureAudioLoaded();
                 io.disconnect();
               }
             });
@@ -495,7 +484,7 @@
           io.observe(wrapper);
         } else {
           var onFirstInteraction = function () {
-            ensureVideoLoaded();
+            ensureAudioLoaded();
             window.removeEventListener('scroll', onFirstInteraction, { passive: true });
             window.removeEventListener('touchstart', onFirstInteraction);
             window.removeEventListener('mousemove', onFirstInteraction);

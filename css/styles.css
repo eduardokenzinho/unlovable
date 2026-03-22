@@ -255,12 +255,15 @@ a { color: inherit; text-decoration: none; }
   aspect-ratio: 16 / 9;
 }
 
-.hero-video {
-  display: block;
+.hero-poster {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  vertical-align: middle;
+  background-image: url('../images/vsl-poster.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .hero-video-overlay {
