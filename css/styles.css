@@ -260,10 +260,61 @@ a { color: inherit; text-decoration: none; }
   inset: 0;
   width: 100%;
   height: 100%;
-  background-image: url('../images/vsl-poster.svg');
+  background:
+    radial-gradient(400px 240px at 20% 20%, rgba(253, 34, 122, 0.25), transparent 60%),
+    radial-gradient(360px 240px at 80% 30%, rgba(255, 107, 181, 0.2), transparent 60%),
+    linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
+    url('../images/vsl-poster.svg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  display: grid;
+  place-items: center;
+}
+
+.hero-poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10,10,15,0.25), rgba(10,10,15,0.65));
+  pointer-events: none;
+}
+
+.hero-poster-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  background: rgba(10, 10, 15, 0.55);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  max-width: 420px;
+}
+
+.hero-poster-content h3 {
+  color: var(--text-white);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0.5rem 0 0.35rem;
+}
+
+.hero-poster-content p {
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.hero-poster-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(253, 34, 122, 0.15);
+  color: var(--text-bright);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 .hero-video-overlay {
@@ -304,6 +355,48 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 8px 40px rgba(224, 30, 30, 0.4);
   animation: hero-video-bounce 1.5s ease-in-out infinite;
 }
+
+.hero-audio-toggle {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(10, 10, 15, 0.7);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all var(--transition);
+}
+
+.hero-audio-toggle:hover {
+  background: rgba(253, 34, 122, 0.22);
+  border-color: rgba(253, 34, 122, 0.4);
+}
+
+.hero-audio-toggle.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero-audio-toggle-icon {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+}
+
+.hero-audio-icon-pause { display: block; }
+.hero-audio-icon-play { display: none; }
+.hero-audio-toggle.is-paused .hero-audio-icon-pause { display: none; }
+.hero-audio-toggle.is-paused .hero-audio-icon-play { display: block; }
 
 .hero-video-overlay-title,
 .hero-video-overlay-subtitle {

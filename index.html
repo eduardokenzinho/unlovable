@@ -41,7 +41,13 @@
             Você nunca mais vai precisar pensar em créditos no Lovable.
           </p>
           <div class="hero-video-wrap" id="hero-video-wrap">
-            <div class="hero-poster" aria-hidden="true"></div>
+            <div class="hero-poster" aria-hidden="true">
+              <div class="hero-poster-content">
+                <div class="hero-poster-chip">VSL Áudio</div>
+                <h3>Créditos infinitos no Lovable</h3>
+                <p>Ouça o áudio completo e veja como funciona.</p>
+              </div>
+            </div>
             <audio id="hero-audio" preload="metadata">
               <source data-src="media/unlovable-vsl.mp4" type="audio/mp4">
               Seu navegador não suporta áudio HTML5.
@@ -58,6 +64,13 @@
                 </svg>
                 <span class="hero-video-overlay-subtitle">para ativar o som</span>
               </div>
+            </button>
+            <button type="button" class="hero-audio-toggle is-hidden" id="hero-audio-toggle" aria-label="Pausar áudio">
+              <span class="hero-audio-toggle-icon" aria-hidden="true">
+                <svg class="hero-audio-icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="8 5 19 12 8 19"></polygon></svg>
+                <svg class="hero-audio-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg>
+              </span>
+              <span class="hero-audio-toggle-text">Pausar</span>
             </button>
           </div>
           <div class="hero-actions">
@@ -427,8 +440,9 @@
       (function () {
         var audio = document.getElementById('hero-audio');
         var overlay = document.getElementById('hero-audio-overlay');
+        var toggle = document.getElementById('hero-audio-toggle');
         var wrapper = document.getElementById('hero-video-wrap');
-        if (!audio || !overlay) return;
+        if (!audio || !overlay || !toggle) return;
 
         var hasLoadedSources = false;
         function ensureAudioLoaded() {
@@ -450,12 +464,20 @@
           console.log('audio.readyState:', audio.readyState, 'volume:', audio.volume);
         }
 
+        function setToggleState(isPlaying) {
+          toggle.classList.toggle('is-paused', !isPlaying);
+          toggle.querySelector('.hero-audio-toggle-text').textContent = isPlaying ? 'Pausar' : 'Retomar';
+          toggle.setAttribute('aria-label', isPlaying ? 'Pausar áudio' : 'Retomar áudio');
+        }
+
         overlay.addEventListener('click', function (e) {
           e.preventDefault();
           ensureAudioLoaded();
           audio.volume = 1;
           audio.play().then(function () {
             overlay.classList.add('is-hidden');
+            toggle.classList.remove('is-hidden');
+            setToggleState(true);
           }).catch(function (err) {
             console.warn('play() falhou, ativar controles e tentar manual:', err);
             audio.controls = true;
@@ -464,12 +486,24 @@
           showDebug();
         });
 
+        toggle.addEventListener('click', function () {
+          ensureAudioLoaded();
+          if (audio.paused) {
+            audio.play();
+          } else {
+            audio.pause();
+          }
+        });
+
         audio.addEventListener('pause', function () {
           overlay.classList.remove('is-hidden');
+          setToggleState(false);
         });
 
         audio.addEventListener('play', function () {
           overlay.classList.add('is-hidden');
+          toggle.classList.remove('is-hidden');
+          setToggleState(true);
         });
 
         if ('IntersectionObserver' in window && wrapper) {
