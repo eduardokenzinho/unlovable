@@ -51,7 +51,9 @@ module.exports = async (req, res) => {
   }
 
   const baseUrl = (process.env.GENESYS_BASE_URL || 'https://api.genesys.finance').replace(/\/+$/, '');
-  const webhookUrl = String(process.env.GENESYS_WEBHOOK_URL || '').trim();
+  // Webhook desativado por padrão para evitar erro de validação no gateway.
+  // Caso queira reativar no futuro, volte a ler GENESYS_WEBHOOK_URL aqui.
+  const webhookUrl = '';
 
   const plan = plans[planKey];
   const academy = {
@@ -70,23 +72,13 @@ module.exports = async (req, res) => {
       ? randomUUID()
       : `ulv_${Date.now()}_${Math.random().toString(16).slice(2)}`);
 
-  let webhook = '';
-  if (webhookUrl && !['null', 'undefined', '-'].includes(webhookUrl.toLowerCase())) {
-    try {
-      const parsed = new URL(webhookUrl);
-      if (parsed.protocol === 'https:' && parsed.hostname) {
-        webhook = parsed.toString();
-      }
-    } catch (err) {
-      webhook = '';
-    }
-  }
+  const webhook = '';
 
   const transaction = {
     external_id: externalId,
     total_amount: totalAmount,
     payment_method: 'PIX',
-    webhook_url: webhook || undefined,
+    webhook_url: undefined,
     items: [
       {
         id: planKey,
