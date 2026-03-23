@@ -21,8 +21,9 @@
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-        if (isLocalhost) return;
+        if (isLocalhost || location.protocol === 'file:') return;
 
+        const capiEndpoint = window.CAPI_ENDPOINT || 'fb-api.php';
         const payload = {
           event_name: 'PageView',
           action_source: 'website',
@@ -33,12 +34,17 @@
           },
         };
 
-        fetch('fb-api.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          keepalive: true,
-        }).catch(() => {});
+        fetch(`${capiEndpoint}?health=1`, { method: 'GET', keepalive: true })
+          .then((res) => {
+            if (!res.ok) return;
+            return fetch(capiEndpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+              keepalive: true,
+            });
+          })
+          .catch(() => {});
       });
     </script>
 
