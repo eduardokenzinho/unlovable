@@ -26,6 +26,7 @@ $documentType = in_array($documentTypeInput, ['CPF', 'CNPJ'], true)
 $document = $documentDigits;
 $planKey = trim((string)($input['plan'] ?? 'mensal'));
 $academySelected = (bool)($input['academy'] ?? false);
+$externalIdInput = trim((string)($input['external_id'] ?? ''));
 
 if ($name === '' || $email === '' || $phone === '' || $documentType === '' || $document === '') {
   http_response_code(422);
@@ -52,7 +53,8 @@ if (!$apiSecret) {
 }
 
 $baseUrl = getenv('GENESYS_BASE_URL') ?: 'https://api.genesys.finance';
-$webhookUrl = getenv('GENESYS_WEBHOOK_URL') ?: '';
+$webhookUrlRaw = getenv('GENESYS_WEBHOOK_URL') ?: '';
+$webhookUrl = filter_var($webhookUrlRaw, FILTER_VALIDATE_URL) ? $webhookUrlRaw : '';
 
 $plan = $plans[$planKey];
 $academy = [
@@ -63,8 +65,10 @@ $academy = [
 ];
 
 $totalAmount = $plan['price'] + ($academySelected ? $academy['price'] : 0);
+$externalId = $externalIdInput !== '' ? $externalIdInput : uniqid('ulv_', true);
+
 $transaction = [
-  'external_id' => $input['external_id'] ?? null,
+  'external_id' => $externalId,
   'total_amount' => $totalAmount,
   'payment_method' => 'PIX',
   'webhook_url' => $webhookUrl ?: null,

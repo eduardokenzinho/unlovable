@@ -1,3 +1,5 @@
+const { randomUUID } = require('crypto');
+
 module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
@@ -49,7 +51,7 @@ module.exports = async (req, res) => {
   }
 
   const baseUrl = (process.env.GENESYS_BASE_URL || 'https://api.genesys.finance').replace(/\/+$/, '');
-  const webhookUrl = process.env.GENESYS_WEBHOOK_URL || '';
+  const webhookUrl = String(process.env.GENESYS_WEBHOOK_URL || '').trim();
 
   const plan = plans[planKey];
   const academy = {
@@ -61,11 +63,27 @@ module.exports = async (req, res) => {
 
   const totalAmount = plan.price + (academySelected ? academy.price : 0);
 
+  const externalIdInput = String(body.external_id || '').trim();
+  const externalId =
+    externalIdInput ||
+    (typeof randomUUID === 'function'
+      ? randomUUID()
+      : `ulv_${Date.now()}_${Math.random().toString(16).slice(2)}`);
+
+  let webhook = '';
+  if (webhookUrl) {
+    try {
+      webhook = new URL(webhookUrl).toString();
+    } catch (err) {
+      webhook = '';
+    }
+  }
+
   const transaction = {
-    external_id: body.external_id || undefined,
+    external_id: externalId,
     total_amount: totalAmount,
     payment_method: 'PIX',
-    webhook_url: webhookUrl || undefined,
+    webhook_url: webhook || undefined,
     items: [
       {
         id: planKey,

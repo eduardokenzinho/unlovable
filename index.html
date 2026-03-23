@@ -1206,6 +1206,11 @@
           const documentDigits = documentRaw.replace(/\D+/g, '');
           const inferredDocumentType = documentDigits.length === 14 ? 'CNPJ' : 'CPF';
 
+          const externalId =
+            (window.crypto && typeof window.crypto.randomUUID === 'function'
+              ? window.crypto.randomUUID()
+              : `ulv_${Date.now()}_${Math.random().toString(16).slice(2)}`);
+
           const payload = {
             name: String(formData.get('name') || '').trim(),
             email: String(formData.get('email') || '').trim(),
@@ -1215,6 +1220,7 @@
             document: documentRaw,
             plan: planKey,
             academy: academyToggle ? academyToggle.checked : false,
+            external_id: externalId,
           };
 
           if (
