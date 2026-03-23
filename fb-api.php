@@ -1,8 +1,8 @@
 <?php
 // --- CONFIGURACOES ---
-$pixel_id = '1311060920880371';
-$access_token = 'EAAMS86t3MiABROQMK8vweQl5OAzZB1BzH5zpw0QtSa4OcFDH1ZAVz6B4RdFFJZAmogl81AEjlZBkWmPVGUmTuVNjb3Dzt0EtByZBEmLTMvYVydHNwyZBg0jfSVgQSffdZCkZcud3vRw1RymuaPNkFMT6iUCzKebkKPcdwKgCGz8rjVleD029RU3fy91898zSOgZDZD';
-$default_test_event_code = 'TEST16797'; // test ativo (Ayron)
+$pixel_id = getenv('FB_PIXEL_ID');
+$access_token = getenv('FB_ACCESS_TOKEN');
+$default_test_event_code = getenv('FB_TEST_EVENT_CODE') ?: '';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -51,6 +51,12 @@ function send_capi_event($pixel_id, $access_token, $default_test_event_code, $ev
 
     $decoded = json_decode($response, true);
     return $decoded !== null ? $decoded : ['ok' => true, 'raw' => $response];
+}
+
+if (!$pixel_id || !$access_token) {
+    http_response_code(500);
+    echo json_encode(['error' => 'FB_PIXEL_ID/FB_ACCESS_TOKEN não configurados.']);
+    exit;
 }
 
 if ($method !== 'POST') {

@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/fb-api.php", "destination": "/api/fb" },
+    { "source": "/genesys-api.php", "destination": "/api/genesys" }
+  ]
+}
