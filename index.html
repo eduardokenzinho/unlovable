@@ -12,12 +12,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="icon" type="image/jpeg" href="favicon/favicon.jpg" />
 
+    <script src="js/qrcode.min.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -87,20 +88,14 @@
           <span>Unlovable</span>
         </a>
         <div class="nav-links">
-          <a
-            href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ"
-            class="nav-cta"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Assinar agora
-          </a>
+          <a href="#checkout" class="nav-cta" data-plan="mensal">Assinar agora</a>
         </div>
       </div>
     </nav>
 
     <main>
-      <section class="hero" aria-label="Introdução">
+      <div id="home-view" data-view="home">
+        <section class="hero" aria-label="Introdução">
         <div class="hero-glow"></div>
         <div class="hero-grid-bg"></div>
         <div class="container hero-inner">
@@ -161,12 +156,7 @@
           </div>
 
           <div class="hero-actions">
-            <a
-              href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ"
-              class="btn btn-accent btn-lg"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="#checkout" class="btn btn-accent btn-lg" data-plan="mensal">
               Créditos + projetos ilimitados
               <svg
                 width="18"
@@ -625,12 +615,7 @@
                   </li>
                 </ul>
 
-                <a
-                  href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ"
-                  class="btn btn-accent btn-lg btn-full"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href="#checkout" class="btn btn-accent btn-lg btn-full" data-plan="mensal">
                   Quero parar de queimar créditos
                   <svg
                     width="18"
@@ -652,12 +637,7 @@
               </div>
             </div>
 
-            <a
-              href="https://pay.pagamentocerto.store/nQ7kZ7DwqRlG0eJ"
-              class="pricing-card-alt"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="#checkout" class="pricing-card-alt" data-plan="trimestral">
               <div class="pricing-inner">
                 <div class="pricing-header">
                   <span class="pricing-badge pricing-badge-alt">Melhor custo-benefício</span>
@@ -779,7 +759,7 @@
         </div>
       </section>
 
-      <section class="section" id="faq">
+        <section class="section" id="faq">
         <div class="container">
           <div class="section-header">
             <span class="section-tag">Dúvidas?</span>
@@ -830,17 +810,12 @@
         </div>
       </section>
 
-      <section class="cta-final" aria-label="Chamada final">
+        <section class="cta-final" aria-label="Chamada final">
         <div class="cta-final-glow"></div>
         <div class="container cta-final-inner">
           <h2>Pronto para criar sem medo da barrinha de créditos?</h2>
           <p>Junte-se a centenas de criadores que já usam o Lovable com liberdade total.</p>
-          <a
-            href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ"
-            class="btn btn-accent btn-lg"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="#checkout" class="btn btn-accent btn-lg" data-plan="mensal">
             Assinar agora por R$ 57/mês
             <svg
               width="18"
@@ -857,6 +832,196 @@
               <path d="m12 5 7 7-7 7"></path>
             </svg>
           </a>
+        </div>
+        </section>
+      </div>
+
+      <section class="checkout-section" id="checkout" hidden>
+        <div class="checkout-shell">
+          <div class="checkout-banner">
+            <div class="banner-card">
+              <div class="banner-icon" aria-hidden="true">
+                <img src="images/heart.png" alt="" class="icon-img" />
+              </div>
+              <div class="banner-text">
+                <h1>TENHA ACESSO AO LOVABLE ILIMITADO</h1>
+                <p>Crie estruturas de vendas ILIMITADAS</p>
+                <a href="#checkout-form" class="banner-cta">Garantir meu acesso</a>
+              </div>
+            </div>
+          </div>
+
+          <form class="checkout-panel" id="checkout-form">
+            <div class="country-row">
+              <img src="images/flag-br.svg" alt="Brasil" class="flag-img" />
+              <span>Brasil</span>
+              <span class="caret"></span>
+            </div>
+
+            <div class="product-card">
+              <div class="product-left">
+                <div class="product-logo">
+                  <img src="images/heart.png" alt="" class="icon-img" />
+                </div>
+                <div>
+                  <h3>Unlovable Mensal</h3>
+                  <p>Extensão auxiliar do Lovable</p>
+                </div>
+              </div>
+              <div class="product-right">
+                <span class="product-badge">Recomendado</span>
+                <div class="product-price">
+                  <span class="price-old">R$ 97,00</span>
+                  <span class="price-now">R$ 57,00 / mês</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="plan-list" role="radiogroup" aria-label="Planos disponíveis">
+              <label class="plan-row">
+                <input type="radio" name="plan" value="mensal" checked />
+                <span class="plan-name">
+                  <img src="images/heart.png" alt="" class="plan-icon" />
+                  Unlovable Pro
+                </span>
+                <span class="plan-price-line"><span class="price-old">R$ 97,00</span>R$ 57,00 / mês</span>
+              </label>
+              <label class="plan-row">
+                <input type="radio" name="plan" value="trimestral" />
+                <span class="plan-name">
+                  <img src="images/heart.png" alt="" class="plan-icon" />
+                  Unlovable Pro Trimestral
+                </span>
+                <span class="plan-price-line">R$ 167,00 / trimestre</span>
+              </label>
+            </div>
+
+            <div class="form-grid checkout-grid">
+              <label class="field">
+                Seu e-mail
+                <input type="email" name="email" autocomplete="email" required />
+              </label>
+              <label class="field">
+                Confirme seu e-mail
+                <input type="email" name="email_confirm" autocomplete="email" required />
+              </label>
+              <label class="field full">
+                Nome completo
+                <input type="text" name="name" autocomplete="name" required />
+              </label>
+              <label class="field">
+                CPF/CNPJ
+                <input type="text" name="document" autocomplete="off" required />
+              </label>
+              <label class="field">
+                Seu celular
+                <div class="phone-row">
+                  <img src="images/flag-br.svg" alt="Brasil" class="flag-img" />
+                  <span class="ddi">+55</span>
+                  <input
+                    type="tel"
+                    name="phone"
+                    class="phone-number"
+                    autocomplete="tel"
+                    inputmode="numeric"
+                    placeholder="11999999999"
+                    required
+                  />
+                </div>
+              </label>
+              <input type="hidden" name="document_type" value="CPF" />
+            </div>
+
+            <details class="coupon-toggle">
+              <summary>Tem cupom de desconto?</summary>
+              <div class="coupon-field">
+                <input type="text" placeholder="Digite o cupom" />
+                <button type="button" class="btn btn-ghost">Aplicar</button>
+              </div>
+            </details>
+
+            <div class="payment-tabs" role="tablist" aria-label="Método de pagamento">
+              <button type="button" class="payment-tab active" data-payment="pix" role="tab" aria-selected="true">
+                Pix Automático
+              </button>
+            </div>
+
+            <div class="payment-panel" data-panel="pix">
+              <p class="checkout-note">Pix automático com confirmação imediata.</p>
+              <div class="pix-card" id="pix-card" hidden>
+                <div class="pix-header">
+                  <div>
+                    <h3>PIX gerado</h3>
+                    <p id="pix-status">Escaneie o QR Code ou copie o código.</p>
+                  </div>
+                  <span class="pix-badge" id="pix-amount">R$ 57,00</span>
+                </div>
+                <div class="pix-qr-wrap">
+                  <div id="pix-qr" class="pix-qr" aria-label="QR Code PIX"></div>
+                </div>
+                <label class="field">
+                  Código copia e cola
+                  <textarea id="pix-code" readonly></textarea>
+                </label>
+                <div class="pix-actions">
+                  <button type="button" class="btn btn-ghost btn-full" id="pix-copy">Copiar código PIX</button>
+                </div>
+                <p class="checkout-note" id="pix-transaction"></p>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <h4>Resumo</h4>
+              <div class="summary-line">
+                <span id="summary-plan">Unlovable Mensal</span>
+                <strong id="summary-price">R$ 57,00 / mês</strong>
+              </div>
+              <div class="summary-line">
+                <span>Subtotal</span>
+                <strong id="summary-subtotal">R$ 57,00</strong>
+              </div>
+              <div class="summary-total">
+                <span>Total</span>
+                <strong id="summary-total">1x R$ 57,00</strong>
+              </div>
+            </div>
+
+            <div class="upsell-card">
+              <div class="upsell-tag">98% DAS PESSOAS COMPRARAM</div>
+              <div class="upsell-body">
+                <div class="upsell-logo">
+                  <img src="images/heart.png" alt="" class="icon-img" />
+                </div>
+                <div class="upsell-content">
+                  <h4>Unlovable Academy</h4>
+                  <strong>R$ 37,00</strong>
+                  <p>
+                    Tenha acesso a uma área selecionada com aulas bem didáticas para você criar qualquer estrutura do
+                    zero.
+                  </p>
+                  <label class="upsell-check">
+                    <input type="checkbox" id="academy-toggle" />
+                    Adicionar Unlovable Academy
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="checkout-actions">
+              <button type="submit" class="btn btn-checkout btn-lg btn-full" id="checkout-submit">
+                Assinar agora
+              </button>
+            </div>
+            <div class="secure-note">
+              <span class="shield" aria-hidden="true"></span>
+              <div>
+                <strong>Ambiente seguro</strong>
+                <p>Seus dados confidenciais</p>
+              </div>
+            </div>
+            <p class="status-message" id="checkout-status" aria-live="polite"></p>
+
+          </form>
         </div>
       </section>
     </main>
@@ -934,6 +1099,239 @@
           );
           io.observe(wrap);
         }
+      })();
+    </script>
+    <script>
+      (function () {
+        const form = document.getElementById('checkout-form');
+        if (!form) return;
+
+        const planMap = {
+          mensal: {
+            label: 'Unlovable Mensal',
+            price: 57,
+            itemTitle: 'Assinatura Mensal',
+            period: '/ mês',
+          },
+          trimestral: {
+            label: 'Unlovable Trimestral',
+            price: 167,
+            itemTitle: 'Assinatura Trimestral',
+            period: '/ trimestre',
+          },
+        };
+        const academy = { id: 'academy', title: 'Unlovable Academy', price: 37 };
+
+        const statusEl = document.getElementById('checkout-status');
+        const submitBtn = document.getElementById('checkout-submit');
+        const summaryPlan = document.getElementById('summary-plan');
+        const summaryPrice = document.getElementById('summary-price');
+        const summarySubtotal = document.getElementById('summary-subtotal');
+        const summaryTotal = document.getElementById('summary-total');
+        const academyToggle = document.getElementById('academy-toggle');
+        const pixCard = document.getElementById('pix-card');
+        const pixAmount = document.getElementById('pix-amount');
+        const pixQr = document.getElementById('pix-qr');
+        const pixCode = document.getElementById('pix-code');
+        const pixCopy = document.getElementById('pix-copy');
+        const pixTransaction = document.getElementById('pix-transaction');
+        const homeView = document.getElementById('home-view');
+        const checkoutView = document.getElementById('checkout');
+        const paymentTabs = form.querySelectorAll('.payment-tab');
+        const paymentPanels = form.querySelectorAll('.payment-panel');
+        let paymentMethod = 'pix';
+
+        const formatBRL = (value) =>
+          value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        const updateSummary = (planKey) => {
+          const plan = planMap[planKey] || planMap.mensal;
+          const academySelected = academyToggle && academyToggle.checked;
+          const total = plan.price + (academySelected ? academy.price : 0);
+          summaryPlan.textContent = plan.label;
+          summaryPrice.textContent = `${formatBRL(plan.price)} ${plan.period}`;
+          summarySubtotal.textContent = formatBRL(total);
+          summaryTotal.textContent = `1x ${formatBRL(total)}`;
+          pixAmount.textContent = formatBRL(total);
+        };
+
+        const selectPlan = (planKey) => {
+          const radio = form.querySelector(`input[name="plan"][value="${planKey}"]`);
+          if (radio) {
+            radio.checked = true;
+            updateSummary(planKey);
+          }
+        };
+
+        form.querySelectorAll('input[name="plan"]').forEach((input) => {
+          input.addEventListener('change', (event) => {
+            updateSummary(event.target.value);
+          });
+        });
+
+        if (academyToggle) {
+          academyToggle.addEventListener('change', () => {
+            const selected = form.querySelector('input[name="plan"]:checked');
+            updateSummary(selected ? selected.value : 'mensal');
+          });
+        }
+
+        document.querySelectorAll('[data-plan]').forEach((link) => {
+          link.addEventListener('click', () => {
+            const planKey = link.getAttribute('data-plan');
+            if (planKey) selectPlan(planKey);
+          });
+        });
+
+        const showStatus = (message, isError = false) => {
+          statusEl.textContent = message;
+          statusEl.dataset.state = isError ? 'error' : 'ok';
+        };
+
+        const setLoading = (isLoading) => {
+          submitBtn.disabled = isLoading;
+          submitBtn.textContent = isLoading ? 'Gerando PIX...' : 'Assinar agora';
+        };
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          showStatus('');
+          if (pixCard) pixCard.hidden = true;
+
+          const formData = new FormData(form);
+          const planKey = formData.get('plan');
+          const plan = planMap[planKey] || planMap.mensal;
+
+          const payload = {
+            name: String(formData.get('name') || '').trim(),
+            email: String(formData.get('email') || '').trim(),
+            email_confirm: String(formData.get('email_confirm') || '').trim(),
+            phone: String(formData.get('phone') || '').trim(),
+            document_type: String(formData.get('document_type') || '').trim(),
+            document: String(formData.get('document') || '').trim(),
+            plan: planKey,
+            academy: academyToggle ? academyToggle.checked : false,
+          };
+
+          if (
+            !payload.name ||
+            !payload.email ||
+            !payload.email_confirm ||
+            !payload.phone ||
+            !payload.document_type ||
+            !payload.document
+          ) {
+            showStatus('Preencha todos os campos para continuar.', true);
+            return;
+          }
+          if (payload.email !== payload.email_confirm) {
+            showStatus('Os e-mails não conferem. Confira e tente novamente.', true);
+            return;
+          }
+
+          setLoading(true);
+
+          try {
+            const endpoint = window.GENESYS_ENDPOINT || 'genesys-api.php';
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+
+            const data = await response.json().catch(() => null);
+            if (!response.ok || !data) {
+              throw new Error(data && data.error ? data.error : 'Não foi possível gerar o PIX.');
+            }
+
+            if (!data.pix || !data.pix.payload) {
+              throw new Error('Resposta inválida do gateway. Tente novamente.');
+            }
+
+            const payloadPix = data.pix.payload;
+            pixCode.value = payloadPix;
+            pixTransaction.textContent = data.id
+              ? `Transação: ${data.id}`
+              : 'Transação criada com sucesso.';
+            if (pixQr) {
+              pixQr.innerHTML = '';
+              if (window.QRCode) {
+                new QRCode(pixQr, {
+                  text: payloadPix,
+                  width: 180,
+                  height: 180,
+                  colorDark: '#111111',
+                  colorLight: '#ffffff',
+                  correctLevel: QRCode.CorrectLevel.M,
+                });
+              } else {
+                const img = document.createElement('img');
+                img.alt = 'QR Code PIX';
+                img.src =
+                  'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' +
+                  encodeURIComponent(payloadPix);
+                pixQr.appendChild(img);
+              }
+            }
+
+            pixCard.hidden = false;
+            showStatus(`PIX do ${plan.label} pronto!`, false);
+          } catch (error) {
+            showStatus(error.message || 'Erro ao gerar PIX.', true);
+          } finally {
+            setLoading(false);
+          }
+        });
+
+        if (pixCopy) {
+          pixCopy.addEventListener('click', async () => {
+            if (!pixCode.value) return;
+            try {
+              await navigator.clipboard.writeText(pixCode.value);
+              pixCopy.textContent = 'Copiado!';
+              setTimeout(() => {
+                pixCopy.textContent = 'Copiar código PIX';
+              }, 2000);
+            } catch (err) {
+              pixCode.select();
+              document.execCommand('copy');
+            }
+          });
+        }
+
+        updateSummary('mensal');
+
+        const setPayment = (method) => {
+          paymentMethod = method;
+          paymentTabs.forEach((tab) => {
+            const active = tab.dataset.payment === method;
+            tab.classList.toggle('active', active);
+            tab.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          paymentPanels.forEach((panel) => {
+            panel.hidden = panel.dataset.panel !== method;
+          });
+          showStatus('');
+        };
+
+        setPayment('pix');
+
+        const setView = () => {
+          const hash = window.location.hash;
+          const isCheckout = hash === '#checkout';
+          if (homeView) homeView.hidden = isCheckout;
+          if (checkoutView) checkoutView.hidden = !isCheckout;
+          document.body.classList.toggle('mode-checkout', isCheckout);
+          if (isCheckout) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        };
+
+        window.addEventListener('hashchange', setView);
+        if (!window.location.hash) {
+          window.location.hash = '#home';
+        }
+        setView();
       })();
     </script>
   </body>
