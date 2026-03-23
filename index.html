@@ -1202,13 +1202,17 @@
           const planKey = formData.get('plan');
           const plan = planMap[planKey] || planMap.mensal;
 
+          const documentRaw = String(formData.get('document') || '').trim();
+          const documentDigits = documentRaw.replace(/\D+/g, '');
+          const inferredDocumentType = documentDigits.length === 14 ? 'CNPJ' : 'CPF';
+
           const payload = {
             name: String(formData.get('name') || '').trim(),
             email: String(formData.get('email') || '').trim(),
             email_confirm: String(formData.get('email_confirm') || '').trim(),
             phone: String(formData.get('phone') || '').trim(),
-            document_type: String(formData.get('document_type') || '').trim(),
-            document: String(formData.get('document') || '').trim(),
+            document_type: inferredDocumentType,
+            document: documentRaw,
             plan: planKey,
             academy: academyToggle ? academyToggle.checked : false,
           };

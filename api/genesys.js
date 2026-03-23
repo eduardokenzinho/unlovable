@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
   const name = String(body.name || '').trim();
   const email = String(body.email || '').trim();
   const rawPhone = String(body.phone || '').trim();
-  const documentType = String(body.document_type || 'CPF').trim();
+  const documentTypeInput = String(body.document_type || 'CPF').trim();
   const rawDocument = String(body.document || '').trim();
   const planKey = String(body.plan || 'mensal').trim();
   const academySelected = Boolean(body.academy);
@@ -21,6 +21,11 @@ module.exports = async (req, res) => {
   const documentDigits = onlyDigits(rawDocument);
   const phone = phoneDigits.startsWith('55') ? phoneDigits : (phoneDigits ? `55${phoneDigits}` : '');
   const document = documentDigits;
+  const inferredDocumentType = document.length === 14 ? 'CNPJ' : 'CPF';
+  const documentType =
+    documentTypeInput.toUpperCase() === 'CNPJ' || documentTypeInput.toUpperCase() === 'CPF'
+      ? documentTypeInput.toUpperCase()
+      : inferredDocumentType;
 
   if (!name || !email || !phone || !documentType || !document) {
     res.status(422).json({ error: 'Campos obrigatórios ausentes.' });

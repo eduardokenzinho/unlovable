@@ -17,8 +17,13 @@ if (!is_array($input)) {
 $name = trim((string)($input['name'] ?? ''));
 $email = trim((string)($input['email'] ?? ''));
 $phone = trim((string)($input['phone'] ?? ''));
-$documentType = trim((string)($input['document_type'] ?? ''));
-$document = trim((string)($input['document'] ?? ''));
+$documentTypeInput = strtoupper(trim((string)($input['document_type'] ?? '')));
+$documentRaw = trim((string)($input['document'] ?? ''));
+$documentDigits = preg_replace('/\D+/', '', $documentRaw);
+$documentType = in_array($documentTypeInput, ['CPF', 'CNPJ'], true)
+  ? $documentTypeInput
+  : (strlen($documentDigits) === 14 ? 'CNPJ' : 'CPF');
+$document = $documentDigits;
 $planKey = trim((string)($input['plan'] ?? 'mensal'));
 $academySelected = (bool)($input['academy'] ?? false);
 
