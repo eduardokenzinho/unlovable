@@ -71,9 +71,12 @@ module.exports = async (req, res) => {
       : `ulv_${Date.now()}_${Math.random().toString(16).slice(2)}`);
 
   let webhook = '';
-  if (webhookUrl) {
+  if (webhookUrl && !['null', 'undefined', '-'].includes(webhookUrl.toLowerCase())) {
     try {
-      webhook = new URL(webhookUrl).toString();
+      const parsed = new URL(webhookUrl);
+      if (parsed.protocol === 'https:' && parsed.hostname) {
+        webhook = parsed.toString();
+      }
     } catch (err) {
       webhook = '';
     }

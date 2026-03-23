@@ -53,8 +53,17 @@ if (!$apiSecret) {
 }
 
 $baseUrl = getenv('GENESYS_BASE_URL') ?: 'https://api.genesys.finance';
-$webhookUrlRaw = getenv('GENESYS_WEBHOOK_URL') ?: '';
-$webhookUrl = filter_var($webhookUrlRaw, FILTER_VALIDATE_URL) ? $webhookUrlRaw : '';
+$webhookUrlRaw = trim((string)(getenv('GENESYS_WEBHOOK_URL') ?: ''));
+$webhookUrlLower = strtolower($webhookUrlRaw);
+$webhookUrl = '';
+if ($webhookUrlRaw !== '' && !in_array($webhookUrlLower, ['null', 'undefined', '-'], true)) {
+  if (filter_var($webhookUrlRaw, FILTER_VALIDATE_URL)) {
+    $parts = parse_url($webhookUrlRaw);
+    if (!empty($parts['scheme']) && strtolower($parts['scheme']) === 'https' && !empty($parts['host'])) {
+      $webhookUrl = $webhookUrlRaw;
+    }
+  }
+}
 
 $plan = $plans[$planKey];
 $academy = [
