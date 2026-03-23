@@ -1,6 +1,7 @@
 {
-  "rewrites": [
-    { "source": "/fb-api.php", "destination": "/api/fb" },
-    { "source": "/genesys-api.php", "destination": "/api/genesys" }
+  "routes": [
+    { "src": "/fb-api.php", "dest": "/api/fb" },
+    { "src": "/genesys-api.php", "dest": "/api/genesys" },
+    { "handle": "filesystem" }
   ]
 }
