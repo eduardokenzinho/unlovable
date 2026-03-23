@@ -2,7 +2,7 @@
 // --- CONFIGURACOES ---
 $pixel_id = '1311060920880371'; 
 $access_token = 'EAAMS86t3MiABROQMK8vweQl5OAzZB1BzH5zpw0QtSa4OcFDH1ZAVz6B4RdFFJZAmogl81AEjlZBkWmPVGUmTuVNjb3Dzt0EtByZBEmLTMvYVydHNwyZBg0jfSVgQSffdZCkZcud3vRw1RymuaPNkFMT6iUCzKebkKPcdwKgCGz8rjVleD029RU3fy91898zSOgZDZD';
-$test_event_code = 'TEST3511'; // test ativo (Ayron)
+$test_event_code = 'TEST16797'; // test ativo (Ayron)
 
 $user_data = [
     'client_ip_address' => $_SERVER['REMOTE_ADDR'],
