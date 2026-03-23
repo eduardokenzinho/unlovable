@@ -8,8 +8,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/jpeg" href="favicon/favicon.jpg">
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1311060920880371');
+      fbq('track', 'PageView');
+    </script>
   </head>
   <body>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1311060920880371&ev=PageView&noscript=1"
+    /></noscript>
 
     <nav class="nav">
       <div class="container nav-inner">
@@ -516,6 +531,33 @@
           .catch(function (err) {
             console.error('FB API error:', err);
           });
+      });
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Captura os dados da URL (fbclid, etc) e do navegador
+        var dadosEvento = {
+          event_name: 'PageView', // Nome do evento
+          event_source_url: window.location.href,
+          client_user_agent: navigator.userAgent,
+          // Adicione aqui outros dados se necessário (email, tel, etc)
+        };
+
+        // Envia para o seu arquivo fb-api.php via POST
+        fetch('fb-api.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dadosEvento)
+        })
+        .then(function(response) { return response.text(); })
+        .then(function(data) {
+          console.log('CAPI Resposta:', data);
+        })
+        .catch(function(error) {
+          console.error('Erro ao disparar CAPI:', error);
+        });
       });
     </script>
     <footer class="footer">
