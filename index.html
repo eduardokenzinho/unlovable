@@ -1,74 +1,148 @@
-<!DOCTYPE html><html lang="pt-BR"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chega de queimar cr?ditos no Lovable</title>
-    <meta name="description" content="Use o Lovable sem gastar cr?ditos. Assinatura mensal de R$ 57 para criar, testar e iterar sem limites.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="icon" type="image/jpeg" href="favicon/favicon.jpg">
+﻿<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chega de queimar créditos no Lovable</title>
+    <meta
+      name="description"
+      content="Use o Lovable sem limites com a nossa extensão. Assinatura mensal de R$ 57 para criar, testar e iterar sem medo."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="icon" type="image/jpeg" href="favicon/favicon.jpg" />
+
     <script>
-      window.addEventListener('load', () => {
-        fetch('fb-api.php', { method: 'POST', keepalive: true }).catch(() => {});
+      document.addEventListener('DOMContentLoaded', () => {
+        const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        if (isLocalhost) return;
+
+        const payload = {
+          event_name: 'PageView',
+          action_source: 'website',
+          event_source_url: window.location.href,
+          custom_data: {
+            content_name: 'Unlovable Landing',
+            content_category: 'Extension',
+          },
+        };
+
+        fetch('fb-api.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).catch(() => {});
       });
     </script>
+
     <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = '2.0';
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
       fbq('init', '1311060920880371');
       fbq('track', 'PageView');
     </script>
   </head>
   <body>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1311060920880371&ev=PageView&noscript=1"
-    /></noscript>
+    <noscript>
+      <img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1311060920880371&ev=PageView&noscript=1"
+        alt=""
+      />
+    </noscript>
 
     <nav class="nav">
       <div class="container nav-inner">
-        <a href="#" class="nav-logo">
-          <img src="images/logo.png" alt="Unlovable" width="36" height="36" class="nav-logo-img">
+        <a href="#" class="nav-logo" aria-label="Unlovable">
+          <img src="images/logo.png" alt="Unlovable" width="36" height="36" class="nav-logo-img" />
           <span>Unlovable</span>
         </a>
         <div class="nav-links">
-          <a href="#preco" class="nav-cta">Assinar agora</a>
+          <a
+            href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ"
+            class="nav-cta"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Assinar agora
+          </a>
         </div>
       </div>
     </nav>
 
     <main>
-
-      <section class="hero">
+      <section class="hero" aria-label="Introdução">
         <div class="hero-glow"></div>
         <div class="hero-grid-bg"></div>
         <div class="container hero-inner">
           <div class="hero-badge">
             <span class="hero-badge-dot"></span>
-            Extens?o para Chrome
+            Extensão para Chrome
           </div>
+
           <h1 class="hero-title">
-            Nunca mais <span class="gradient-text">compre cr?ditos</span> no Lovable
+            Nunca mais compre <span class="gradient-text">créditos no Lovable</span>
           </h1>
           <p class="hero-desc">
-            Com a nossa extens?o voc? tem cr?ditos ilimitados.
-            Voc? nunca mais vai precisar pensar em cr?ditos no Lovable.
+            Com a nossa extensão você tem <strong>créditos ilimitados</strong>. Você nunca mais vai precisar pensar em
+            créditos no Lovable.
           </p>
+
           <div class="hero-video-wrap" id="hero-video-wrap">
-            <video class="hero-video" id="hero-video" playsinline preload="metadata" poster="images/vsl-poster.jpg" loop>
-              <source data-src="media/unlovable-vsl-h264-720p.mp4" type="video/mp4">
-              Seu navegador n?o suporta v?deo HTML5.
+            <video
+              class="hero-video"
+              id="hero-video"
+              playsinline
+              preload="metadata"
+              poster="images/vsl-poster.jpg"
+            >
+              <source data-src="media/unlovable-vsl-h264-720p.mp4" type="video/mp4" />
+              Seu navegador não suporta vídeo HTML5.
             </video>
-            <button type="button" class="hero-video-overlay" id="hero-video-overlay" aria-label="Clique aqui para ativar o som">
+
+            <button
+              type="button"
+              class="hero-video-overlay"
+              id="hero-video-overlay"
+              aria-label="Clique aqui para ativar o som"
+            >
               <div class="hero-video-overlay-box">
                 <span class="hero-video-overlay-title">Clique aqui</span>
-                <svg class="hero-video-overlay-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  class="hero-video-overlay-icon"
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                   <line x1="23" y1="9" x2="17" y2="15"></line>
                   <line x1="17" y1="9" x2="23" y2="15"></line>
@@ -79,74 +153,65 @@
               </div>
             </button>
           </div>
+
           <div class="hero-actions">
-            <!-- TODO: Substituir href pelo link real do checkout Kirvano -->
-            <a href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ" class="btn btn-accent btn-lg">
-              Cr?ditos + projetos ilimitados
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            <a
+              href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ"
+              class="btn btn-accent btn-lg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Créditos + projetos ilimitados
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
             </a>
-            <a href="#como-funciona" class="btn btn-ghost btn-lg">
-              Como funciona?
-            </a>
+            <a href="#como-funciona" class="btn btn-ghost btn-lg">Como funciona?</a>
           </div>
-          
         </div>
       </section>
 
-      <section class="logos-bar">
+      <section class="logos-bar" aria-label="Compatibilidade">
         <div class="container">
           <p class="logos-label">Funciona perfeitamente com</p>
           <div class="logos-marquee">
             <div class="logos-track">
               <div class="logos-row">
-                <span class="logo-item">
-                  <img src="images/chrome.svg" alt="Chrome" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/edge.svg" alt="Edge" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/brave.svg" alt="Brave" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/firefox.svg" alt="Firefox" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/safari.svg" alt="Safari" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/opera-gx.svg" alt="Opera GX" width="56" height="56">
-                </span>
+                <span class="logo-item"><img src="images/chrome.svg" alt="Chrome" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/edge.svg" alt="Edge" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/brave.svg" alt="Brave" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/firefox.svg" alt="Firefox" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/safari.svg" alt="Safari" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/opera-gx.svg" alt="Opera GX" width="56" height="56" /></span>
               </div>
               <div class="logos-row" aria-hidden="true">
-                <span class="logo-item">
-                  <img src="images/chrome.svg" alt="" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/edge.svg" alt="" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/brave.svg" alt="" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/firefox.svg" alt="" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/safari.svg" alt="" width="56" height="56">
-                </span>
-                <span class="logo-sep"></span>
-                <span class="logo-item">
-                  <img src="images/opera-gx.svg" alt="" width="56" height="56">
-                </span>
+                <span class="logo-item"><img src="images/chrome.svg" alt="" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/edge.svg" alt="" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/brave.svg" alt="" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/firefox.svg" alt="" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/safari.svg" alt="" width="56" height="56" /></span>
+                <span class="logo-sep" aria-hidden="true"></span>
+                <span class="logo-item"><img src="images/opera-gx.svg" alt="" width="56" height="56" /></span>
               </div>
             </div>
           </div>
@@ -158,29 +223,85 @@
           <div class="section-header">
             <span class="section-tag">O problema</span>
             <h2>Lovable "barato" que sai <span class="gradient-text">caro</span></h2>
-            <p class="section-desc">Se voc? cria de verdade, j? sentiu na pele o peso do modelo de cr?ditos.</p>
+            <p class="section-desc">Se você cria de verdade, já sentiu na pele o peso do modelo de créditos.</p>
           </div>
+
           <div class="pain-grid">
             <div class="pain-card">
-              <div class="pain-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+              <div class="pain-icon" aria-hidden="true">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--accent)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+                  <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                  <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                </svg>
               </div>
               <h3>Medo de clicar</h3>
-              <p>Voc? pensa duas vezes antes de pedir uma nova varia??o. A criatividade trava quando cada tentativa custa cr?dito.</p>
+              <p>
+                Você pensa duas vezes antes de pedir uma nova variação. A criatividade trava quando cada tentativa custa
+                crédito.
+              </p>
             </div>
+
             <div class="pain-card">
-              <div class="pain-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              <div class="pain-icon" aria-hidden="true">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--accent)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 2v20"></path>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
               </div>
               <h3>Conta surpresa</h3>
-              <p>No fim do m?s, a fatura parece mais um castigo do que uma ferramenta de produtividade. Cada "gera de novo" come seus cr?ditos.</p>
+              <p>
+                No fim do mês, a fatura parece mais um castigo do que uma ferramenta de produtividade. Cada "gera de
+                novo" come seus créditos.
+              </p>
             </div>
+
             <div class="pain-card">
-              <div class="pain-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"></path><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"></path></svg>
+              <div class="pain-icon" aria-hidden="true">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--accent)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path>
+                  <path
+                    d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"
+                  ></path>
+                  <path
+                    d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"
+                  ></path>
+                  <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"></path>
+                </svg>
               </div>
               <h3>Resultado meia-boca</h3>
-              <p>Voc? evita experimentar para economizar cr?dito e entrega um projeto med?ocre. O modelo de cr?ditos n?o foi feito para quem precisa iterar.</p>
+              <p>
+                Você evita experimentar para economizar crédito e entrega um projeto medíocre. O modelo de créditos não
+                foi feito para quem precisa iterar.
+              </p>
             </div>
           </div>
         </div>
@@ -189,10 +310,13 @@
       <section class="section section-dark" id="como-funciona">
         <div class="container">
           <div class="section-header">
-            <span class="section-tag">A solu??o</span>
+            <span class="section-tag">A solução</span>
             <h2>Use o Lovable <span class="gradient-text">sem limites</span></h2>
-            <p class="section-desc">Nossa extens?o remove a ansiedade dos cr?ditos. Instale, ative e crie sem culpa.</p>
+            <p class="section-desc">
+              Nossa extensão remove a ansiedade dos créditos. Instale, ative e crie sem culpa.
+            </p>
           </div>
+
           <div class="steps-timeline">
             <div class="step-item">
               <div class="step-indicator">
@@ -201,116 +325,201 @@
               </div>
               <div class="step-card">
                 <h3>Assine o plano</h3>
-                <p>Pagamento ?nico de R$ 57 para 30 dias completos de uso. Sem taxas extras, sem surpresas.</p>
+                <p>Pagamento único de R$ 57 para 30 dias completos de uso. Sem taxas extras, sem surpresas.</p>
               </div>
             </div>
+
             <div class="step-item">
               <div class="step-indicator">
                 <div class="step-dot"><span>02</span></div>
                 <div class="step-line"></div>
               </div>
               <div class="step-card">
-                <h3>Ative a extens?o</h3>
-                <p>Receba sua licen?a por e-mail, instale a extens?o no Chrome e ative com um clique.</p>
+                <h3>Ative a extensão</h3>
+                <p>Receba sua licença por e-mail, instale a extensão no Chrome e ative com um clique.</p>
               </div>
             </div>
+
             <div class="step-item">
               <div class="step-indicator">
                 <div class="step-dot"><span>03</span></div>
               </div>
               <div class="step-card">
                 <h3>Crie sem medo</h3>
-                <p>Use o Lovable sem gastar cr?ditos com a extens?o ativa. Teste, refa?a e itere quantas vezes quiser.</p>
+                <p>
+                  Use o Lovable sem gastar créditos com a extensão ativa. Teste, refaça e itere quantas vezes quiser.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="section" id="features">
+      <section class="section" id="vantagens">
         <div class="container">
           <div class="section-header">
             <span class="section-tag">Vantagens</span>
             <h2>Feita para quem cria <span class="gradient-text">de verdade</span></h2>
           </div>
+
           <div class="features-list">
             <div class="feature-row">
               <div class="feature-visual">
-                <div class="feature-icon-lg">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div class="feature-icon-lg" aria-hidden="true">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--accent)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
                 </div>
               </div>
               <div class="feature-text">
                 <h4>30 dias de liberdade</h4>
-                <p>Use a extens?o ? vontade durante todo o m?s da sua assinatura. Sem limites di?rios, sem contadores.</p>
+                <p>Use a extensão à vontade durante todo o mês da sua assinatura. Sem limites diários, sem contadores.</p>
               </div>
             </div>
+
             <div class="feature-row feature-row-reverse">
               <div class="feature-visual">
-                <div class="feature-icon-lg">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <div class="feature-icon-lg" aria-hidden="true">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--accent)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
                 </div>
               </div>
               <div class="feature-text">
-                <h4>Sem consumo de cr?ditos</h4>
-                <p>A extens?o opera sem gastar os cr?ditos do Lovable. Seu saldo continua intocado.</p>
+                <h4>Sem consumo de créditos</h4>
+                <p>A extensão opera sem gastar os créditos do Lovable. Seu saldo continua intocado.</p>
               </div>
             </div>
+
             <div class="feature-row">
               <div class="feature-visual">
-                <div class="feature-icon-lg">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <div class="feature-icon-lg" aria-hidden="true">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--accent)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                  </svg>
                 </div>
               </div>
               <div class="feature-text">
                 <h4>Itere sem culpa</h4>
-                <p>Refa?a, teste e polir projetos sem olhar para a barrinha de cr?ditos. Erre r?pido, acerte forte.</p>
+                <p>Refaça, teste e polir projetos sem olhar para a barrinha de créditos. Erre rápido, acerte forte.</p>
               </div>
             </div>
+
             <div class="feature-row feature-row-reverse">
               <div class="feature-visual">
-                <div class="feature-icon-lg">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <div class="feature-icon-lg" aria-hidden="true">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--accent)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
                 </div>
               </div>
               <div class="feature-text">
-                <h4>Licen?a por e-mail</h4>
-                <p>Ap?s o pagamento, a licen?a chega direto no seu e-mail. Sem burocracia, sem espera.</p>
+                <h4>Licença por e-mail</h4>
+                <p>Após o pagamento, a licença chega direto no seu e-mail. Sem burocracia, sem espera.</p>
               </div>
             </div>
+
             <div class="feature-row">
               <div class="feature-visual">
-                <div class="feature-icon-lg">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <div class="feature-icon-lg" aria-hidden="true">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--accent)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
                 </div>
               </div>
               <div class="feature-text">
-                <h4>Ativa??o instant?nea</h4>
-                <p>Instale a extens?o e comece a usar em menos de 2 minutos. Zero configura??o.</p>
+                <h4>Ativação instantânea</h4>
+                <p>Instale a extensão e comece a usar em menos de 2 minutos. Zero configuração.</p>
               </div>
             </div>
+
             <div class="feature-row feature-row-reverse">
               <div class="feature-visual">
-                <div class="feature-icon-lg">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <div class="feature-icon-lg" aria-hidden="true">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--accent)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
                 </div>
               </div>
               <div class="feature-text">
                 <h4>Para times e freelancers</h4>
-                <p>Perfeita para devs, designers, product owners e ag?ncias que vivem no Lovable.</p>
+                <p>Perfeita para devs, designers, product owners e agências que vivem no Lovable.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="section section-dark" id="preco">
+      <section class="section section-dark" id="pricing">
         <div class="container">
           <div class="section-header">
             <span class="section-tag">Investimento</span>
-            <h2>Um pre?o. <span class="gradient-text">Zero surpresas.</span></h2>
-            <p class="section-desc">Sem taxas escondidas, sem cobran?a por clique, sem susto no fim do m?s.</p>
+            <h2>Um preço. <span class="gradient-text">Zero surpresas.</span></h2>
+            <p class="section-desc">Sem taxas escondidas, sem cobrança por clique, sem susto no fim do mês.</p>
           </div>
+
           <div class="pricing-wrapper">
             <div class="pricing-card">
               <div class="pricing-glow"></div>
@@ -318,78 +527,246 @@
                 <div class="pricing-header">
                   <span class="pricing-badge">Mais popular</span>
                   <h3>Plano Mensal</h3>
-                  <p class="pricing-tagline">Tudo que voc? precisa para criar sem limites</p>
+                  <p class="pricing-tagline">Tudo que você precisa para criar sem limites</p>
                 </div>
+
                 <div class="pricing-price">
                   <span class="pricing-currency">R$</span>
                   <span class="pricing-amount">57</span>
-                  <span class="pricing-period">/m?s</span>
+                  <span class="pricing-period">/mês</span>
                 </div>
+
                 <ul class="pricing-features">
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    30 dias de uso da extens?o
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    30 dias de uso da extensão
                   </li>
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Sem consumo de cr?ditos do Lovable
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Sem consumo de créditos do Lovable
                   </li>
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Upload de at? 5 imagens por prompt
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Upload de até 5 imagens por prompt
                   </li>
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Licen?a enviada por e-mail
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Licença enviada por e-mail
                   </li>
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Suporte priorit?rio
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Suporte prioritário
                   </li>
                 </ul>
-                <a href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ" class="btn btn-accent btn-lg btn-full" target="_blank" rel="noopener noreferrer">
-                  Quero parar de queimar cr?ditos
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+
+                <a
+                  href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ"
+                  class="btn btn-accent btn-lg btn-full"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Quero parar de queimar créditos
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path>
+                  </svg>
                 </a>
-                <p class="pricing-hint">Checkout seguro. Acesso imediato ap?s pagamento.</p>
+
+                <p class="pricing-hint">Checkout seguro. Acesso imediato após pagamento.</p>
               </div>
             </div>
-            <a href="https://pay.pagamentocerto.store/nQ7kZ7DwqRlG0eJ" class="pricing-card pricing-card-alt" target="_blank" rel="noopener noreferrer">
+
+            <a
+              href="https://pay.pagamentocerto.store/nQ7kZ7DwqRlG0eJ"
+              class="pricing-card-alt"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div class="pricing-inner">
                 <div class="pricing-header">
-                  <span class="pricing-badge pricing-badge-alt">Melhor custo-benef?cio</span>
+                  <span class="pricing-badge pricing-badge-alt">Melhor custo-benefício</span>
                   <h3>Plano Trimestral</h3>
                   <p class="pricing-tagline">3 meses de uso com desconto</p>
                 </div>
+
                 <div class="pricing-price">
                   <span class="pricing-currency">R$</span>
                   <span class="pricing-amount">167</span>
                   <span class="pricing-period">/trimestre</span>
                 </div>
+
                 <ul class="pricing-features pricing-features-alt">
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    90 dias de uso da extens?o
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    90 dias de uso da extensão
                   </li>
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Sem consumo de cr?ditos do Lovable
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Sem consumo de créditos do Lovable
                   </li>
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Upload de at? 5 imagens por prompt
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Upload de até 5 imagens por prompt
                   </li>
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Licen?a enviada por e-mail
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Licença enviada por e-mail
                   </li>
                   <li>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Suporte priorit?rio
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--accent)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Suporte prioritário
                   </li>
                 </ul>
-                <span class="pricing-cta-fake">Economize com 3 meses ?</span>
-                <p class="pricing-hint">Checkout seguro. Acesso imediato ap?s pagamento.</p>
+
+                <div class="pricing-cta-fake">
+                  Economize com 3 meses →
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path>
+                  </svg>
+                </div>
+
+                <p class="pricing-hint">Checkout seguro. Acesso imediato após pagamento.</p>
               </div>
             </a>
           </div>
@@ -399,182 +776,159 @@
       <section class="section" id="faq">
         <div class="container">
           <div class="section-header">
-            <span class="section-tag">Duvidas?</span>
+            <span class="section-tag">Dúvidas?</span>
             <h2>Perguntas frequentes</h2>
           </div>
+
           <div class="faq-list">
-            <details class="faq-item" open="">
-              <summary>Eu realmente n?o gasto cr?ditos do Lovable?</summary>
-              <p>O uso da extens?o durante o seu m?s de assinatura n?o consome cr?ditos adicionais do Lovable. Voc? usa a ferramenta sem aquele medo constante de "estar queimando cr?dito ? toa".</p>
+            <details class="faq-item">
+              <summary>Eu realmente não gasto créditos do Lovable?</summary>
+              <p>
+                O uso da extensão durante o seu mês de assinatura não consome créditos adicionais do Lovable. Você usa a
+                ferramenta sem aquele medo constante de "estar queimando crédito à toa".
+              </p>
             </details>
+
             <details class="faq-item">
               <summary>Quanto tempo dura o acesso?</summary>
-              <p>Sua assinatura ? mensal. Voc? tem 30 dias de uso da extens?o ap?s a confirma??o do pagamento. Antes de expirar, voc? pode renovar para continuar usando sem interrup??es.</p>
+              <p>
+                Sua assinatura é mensal. Você tem 30 dias de uso da extensão após a confirmação do pagamento. Antes de
+                expirar, você pode renovar para continuar usando sem interrupções.
+              </p>
             </details>
+
             <details class="faq-item">
-              <summary>Para quem essa extens?o ? perfeita?</summary>
-              <p>Para quem usa o Lovable como ferramenta s?ria de cria??o: devs, designers, product owners, freelancers e ag?ncias que precisam testar, refazer e polir projetos sem ficar fazendo conta de cr?dito.</p>
+              <summary>Para quem essa extensão é perfeita?</summary>
+              <p>
+                Para quem usa o Lovable como ferramenta séria de criação: devs, designers, product owners, freelancers e
+                agências que precisam testar, refazer e polir projetos sem ficar fazendo conta de crédito.
+              </p>
             </details>
+
             <details class="faq-item">
-              <summary>Como recebo minha licen?a?</summary>
-              <p>Ap?s a confirma??o do pagamento, sua licen?a ? gerada automaticamente e enviada para o e-mail cadastrado no checkout. Basta copiar e colar na extens?o.</p>
+              <summary>Como recebo minha licença?</summary>
+              <p>
+                Após a confirmação do pagamento, sua licença é gerada automaticamente e enviada para o e-mail cadastrado
+                no checkout. Basta copiar e colar na extensão.
+              </p>
             </details>
+
             <details class="faq-item">
               <summary>Funciona em qual navegador?</summary>
-              <p>A extens?o funciona em todos os navegadores baseados em Chromium: Google Chrome, Microsoft Edge, Brave, Opera e outros.</p>
+              <p>
+                A extensão funciona em todos os navegadores baseados em Chromium: Google Chrome, Microsoft Edge, Brave,
+                Opera e outros.
+              </p>
             </details>
           </div>
         </div>
       </section>
 
-      <section class="cta-final">
+      <section class="cta-final" aria-label="Chamada final">
         <div class="cta-final-glow"></div>
         <div class="container cta-final-inner">
-          <h2>Pronto para criar sem medo da barrinha de cr?ditos?</h2>
-          <p>Junte-se a centenas de criadores que j? usam o Lovable com liberdade total.</p>
-          <!-- TODO: Substituir href pelo link real do checkout Kirvano -->
-          <a href="#preco" class="btn btn-accent btn-lg">
-            Assinar agora por R$ 57/m?s
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          <h2>Pronto para criar sem medo da barrinha de créditos?</h2>
+          <p>Junte-se a centenas de criadores que já usam o Lovable com liberdade total.</p>
+          <a
+            href="https://pay.pagamentocerto.store/5pjw3RnWzLl32lQ"
+            class="btn btn-accent btn-lg"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Assinar agora por R$ 57/mês
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
           </a>
         </div>
       </section>
-
     </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">© 2026 Unlovable. Todos os direitos reservados.</div>
+    </footer>
 
     <script>
       (function () {
-        var video = document.getElementById('hero-video');
-        var overlay = document.getElementById('hero-video-overlay');
-        var wrapper = document.getElementById('hero-video-wrap');
+        const video = document.getElementById('hero-video');
+        const overlay = document.getElementById('hero-video-overlay');
+        const wrap = document.getElementById('hero-video-wrap');
         if (!video || !overlay) return;
 
-        var hasLoadedSources = false;
-        function ensureVideoLoaded() {
-          if (hasLoadedSources) return;
-          var sources = video.querySelectorAll('source[data-src]');
-          sources.forEach(function (source) {
-            source.src = source.getAttribute('data-src');
+        let sourcesLoaded = false;
+        function loadSources() {
+          if (sourcesLoaded) return;
+          for (const source of video.querySelectorAll('source[data-src]')) {
+            source.src = source.dataset.src;
             source.removeAttribute('data-src');
-          });
+          }
           video.load();
-          hasLoadedSources = true;
+          sourcesLoaded = true;
         }
 
-        video.muted = true;
-        video.volume = 1;
-        video.controls = false;
-        overlay.classList.remove('is-hidden');
-
-        function showDebug() {
-          console.log('video.readyState:', video.readyState, 'muted:', video.muted, 'volume:', video.volume);
+        function hideOverlay() {
+          overlay.classList.add('is-hidden');
+        }
+        function showOverlay() {
+          overlay.classList.remove('is-hidden');
         }
 
-        overlay.addEventListener('click', function (e) {
-          e.preventDefault();
-          ensureVideoLoaded();
+        overlay.addEventListener('click', (event) => {
+          event.preventDefault();
+          loadSources();
           video.muted = false;
           video.volume = 1;
-          video.play().then(function () {
-            overlay.classList.add('is-hidden');
-          }).catch(function (err) {
-            console.warn('play() falhou, ativar controles e tentar manual:', err);
-            video.controls = true;
-            overlay.classList.remove('is-hidden');
-          });
-          showDebug();
+          video
+            .play()
+            .then(() => {
+              video.controls = true;
+              hideOverlay();
+            })
+            .catch(() => {
+              video.controls = true;
+              showOverlay();
+            });
         });
 
-        video.addEventListener('click', function () {
-          ensureVideoLoaded();
+        video.addEventListener('click', () => {
+          loadSources();
           if (video.paused) {
-            video.play();
+            video.play().catch(() => {});
           } else {
             video.pause();
           }
-          overlay.classList.toggle('is-hidden', !video.paused);
         });
 
-        video.addEventListener('pause', function () {
-          overlay.classList.remove('is-hidden');
-        });
+        video.addEventListener('play', hideOverlay);
+        video.addEventListener('pause', showOverlay);
 
-        video.addEventListener('play', function () {
-          overlay.classList.add('is-hidden');
-        });
-
-        if ('IntersectionObserver' in window && wrapper) {
-          var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-              if (entry.isIntersecting) {
-                ensureVideoLoaded();
-                io.disconnect();
+        if ('IntersectionObserver' in window && wrap) {
+          const io = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (entry.isIntersecting) {
+                  loadSources();
+                  io.disconnect();
+                  break;
+                }
               }
-            });
-          }, { rootMargin: '300px 0px' });
-          io.observe(wrapper);
-        } else {
-          var onFirstInteraction = function () {
-            ensureVideoLoaded();
-            window.removeEventListener('scroll', onFirstInteraction, { passive: true });
-            window.removeEventListener('touchstart', onFirstInteraction);
-            window.removeEventListener('mousemove', onFirstInteraction);
-          };
-          window.addEventListener('scroll', onFirstInteraction, { passive: true });
-          window.addEventListener('touchstart', onFirstInteraction, { passive: true });
-          window.addEventListener('mousemove', onFirstInteraction, { passive: true });
+            },
+            { rootMargin: '300px 0px' },
+          );
+          io.observe(wrap);
         }
       })();
     </script>
-    <script>
-      window.addEventListener('load', function () {
-        fetch('fb-api.php', { method: 'GET' })
-          .then(function (res) { return res.text(); })
-          .then(function (text) {
-            console.log('FB API response:', text);
-          })
-          .catch(function (err) {
-            console.error('FB API error:', err);
-          });
-      });
-    </script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Captura os dados da URL (fbclid, etc) e do navegador
-        var dadosEvento = {
-          event_name: 'PageView', // Nome do evento
-          event_source_url: window.location.href,
-          client_user_agent: navigator.userAgent,
-          // Adicione aqui outros dados se necess?rio (email, tel, etc)
-        };
-
-        // Envia para o seu arquivo fb-api.php via POST
-        fetch('fb-api.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dadosEvento)
-        })
-        .then(function(response) { return response.text(); })
-        .then(function(data) {
-          console.log('CAPI Resposta:', data);
-        })
-        .catch(function(error) {
-          console.error('Erro ao disparar CAPI:', error);
-        });
-      });
-    </script>
-    <footer class="footer">
-      <div class="container footer-inner">
-        <p>? 2026 Unlovable. Todos os direitos reservados.</p>
-      </div>
-    </footer>
-
-  
-
-</body></html>
-
-
-
-
+  </body>
+</html>
