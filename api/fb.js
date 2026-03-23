@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
   const defaultTestEventCode = process.env.FB_TEST_EVENT_CODE || '';
 
   if (!pixelId || !accessToken) {
-    res.status(500).json({ error: 'FB_PIXEL_ID/FB_ACCESS_TOKEN não configurados.' });
+    res.status(200).json({ ok: true, disabled: true, message: 'FB env vars ausentes' });
     return;
   }
 
