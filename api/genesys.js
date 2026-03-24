@@ -1,6 +1,30 @@
+Ôªømodule.exports.config = { runtime: 'nodejs' };
+
 const { randomUUID } = require('crypto');
 
-module.exports = async (req, res) => {\r\n  const fetchPixImage = async (url, apiSecret) => {\r\n    const res = await fetch(url, {\r\n      method: 'GET',\r\n      headers: {\r\n        'Content-Type': 'application/json',\r\n        'api-secret': apiSecret,\r\n      },\r\n    });\r\n    const contentType = (res.headers.get('content-type') || '').toLowerCase();\r\n    if (contentType.includes('application/json')) {\r\n      const data = await res.json().catch(() => null);\r\n      return { type: 'json', data };\r\n    }\r\n    if (contentType.includes('image/')) {\r\n      const buffer = Buffer.from(await res.arrayBuffer());\r\n      const base64 = buffer.toString('base64');\r\n      return { type: 'image', data: base64, contentType };\r\n    }\r\n    const data = await res.text().catch(() => '');\r\n    return { type: 'text', data };\r\n  };\r\n
+module.exports = async (req, res) => {
+  const fetchPixImage = async (url, apiSecret) => {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-secret': apiSecret,
+      },
+    });
+    const contentType = (res.headers.get('content-type') || '').toLowerCase();
+    if (contentType.includes('application/json')) {
+      const data = await res.json().catch(() => null);
+      return { type: 'json', data };
+    }
+    if (contentType.includes('image/')) {
+      const buffer = Buffer.from(await res.arrayBuffer());
+      const base64 = buffer.toString('base64');
+      return { type: 'image', data: base64, contentType };
+    }
+    const data = await res.text().catch(() => '');
+    return { type: 'text', data };
+  };
+
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('X-Genesys-Handler', 'api/genesys.js');
   res.setHeader('X-Genesys-Handler-Version', '2026-03-24');
@@ -37,14 +61,14 @@ module.exports = async (req, res) => {\r\n  const fetchPixImage = async (url, ap
   if (req.method === 'GET') {
     const apiSecret = process.env.GENESYS_API_SECRET;
     if (!apiSecret) {
-      res.status(500).json({ error: 'GENESYS_API_SECRET n„o configurado no servidor.' });
+      res.status(500).json({ error: 'GENESYS_API_SECRET n√£o configurado no servidor.' });
       return;
     }
     const baseUrl = (process.env.GENESYS_BASE_URL || 'https://api.genesys.finance').replace(/\/+$/, '');
     const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'));
     const id = (req.query && req.query.id) || url.searchParams.get('id');
     if (!id) {
-      res.status(400).json({ error: 'ID da transaÁ„o n„o informado.' });
+      res.status(400).json({ error: 'ID da transa√ß√£o n√£o informado.' });
       return;
     }
     try {
@@ -71,7 +95,7 @@ module.exports = async (req, res) => {\r\n  const fetchPixImage = async (url, ap
           }
         } catch (err) {}
       }
-      res.status(response.status).json(normalizePix(sanitizePix(data)) || { error: 'Resposta inv·lida do gateway.' });
+      res.status(response.status).json(normalizePix(sanitizePix(data)) || { error: 'Resposta inv√°lida do gateway.' });
     } catch (error) {
       res.status(500).json({ error: 'Falha ao conectar no gateway.' });
     }
@@ -79,7 +103,7 @@ module.exports = async (req, res) => {\r\n  const fetchPixImage = async (url, ap
   }
 
   if (req.method !== 'POST') {
-    res.status(405).json({ error: 'MÈtodo n„o permitido.' });
+    res.status(405).json({ error: 'M√©todo n√£o permitido.' });
     return;
   }
 
@@ -113,7 +137,7 @@ module.exports = async (req, res) => {\r\n  const fetchPixImage = async (url, ap
       : inferredDocumentType;
 
   if (!name || !email || !phone || !documentType || !document) {
-    res.status(422).json({ error: 'Campos obrigatÛrios ausentes.' });
+    res.status(422).json({ error: 'Campos obrigat√≥rios ausentes.' });
     return;
   }
 
@@ -123,13 +147,13 @@ module.exports = async (req, res) => {\r\n  const fetchPixImage = async (url, ap
   };
 
   if (!plans[planKey]) {
-    res.status(422).json({ error: 'Plano inv·lido.' });
+    res.status(422).json({ error: 'Plano inv√°lido.' });
     return;
   }
 
   const apiSecret = process.env.GENESYS_API_SECRET;
   if (!apiSecret) {
-    res.status(500).json({ error: 'GENESYS_API_SECRET n„o configurado no servidor.' });
+    res.status(500).json({ error: 'GENESYS_API_SECRET n√£o configurado no servidor.' });
     return;
   }
 
@@ -254,11 +278,13 @@ module.exports = async (req, res) => {\r\n  const fetchPixImage = async (url, ap
       return;
     }
 
-    res.status(response.status).json({ error: 'Resposta inv·lida do gateway.', debug });
+    res.status(response.status).json({ error: 'Resposta inv√°lida do gateway.', debug });
   } catch (error) {
     res.status(500).json({ error: 'Falha ao conectar no gateway.' });
   }
 };
+
+
 
 
 
