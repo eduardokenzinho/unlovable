@@ -29,6 +29,16 @@ module.exports = async (req, res) => {
   res.setHeader('X-Genesys-Handler', 'api/genesys.js');
   res.setHeader('X-Genesys-Handler-Version', '2026-03-24');
 
+  const logSafeHeaders = (headers) => {
+    const safeHeaders = { ...headers };
+    const authKey = safeHeaders.Authorization ? 'Authorization' : safeHeaders['api-secret'] ? 'api-secret' : '';
+    if (authKey) {
+      const value = String(safeHeaders[authKey] || '');
+      safeHeaders[authKey] = value ? value.substring(0, 15) + '... (masked)' : '... (masked)';
+    }
+    console.log('HEADERS_ENVIADOS:', safeHeaders);
+  };
+
   const sanitizePix = (data) => {
     if (!data || typeof data !== 'object') return data;
     if (data.pix && typeof data.pix === 'object' && data.pix.hasError) {
@@ -98,12 +108,14 @@ module.exports = async (req, res) => {
       return;
     }
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'api-secret': apiSecret,
+      };
+      logSafeHeaders(headers);
       const response = await fetch(baseUrl + '/v1/transactions/' + id, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'api-secret': apiSecret,
-        },
+        headers,
       });
       const data = await response.json().catch(() => null);
       console.log('RESPOSTA_GATEWAY:', JSON.stringify(data, null, 2));
@@ -248,12 +260,14 @@ module.exports = async (req, res) => {
   }
 
   try {
+    const headers = {
+      'Content-Type': 'application/json',
+      'api-secret': apiSecret,
+    };
+    logSafeHeaders(headers);
     const response = await fetch(`${baseUrl}/v1/transactions`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-secret': apiSecret,
-      },
+      headers,
       body: JSON.stringify(transaction),
     });
 
