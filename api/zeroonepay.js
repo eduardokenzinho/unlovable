@@ -212,8 +212,18 @@ module.exports = async (req, res) => {
     res.status(422).json({ error: 'cart obrigatorio.' });
     return;
   }
+  let normalizedCart = cart;
+  if (Array.isArray(cart)) {
+    normalizedCart = cart.map((item) => {
+      if (!item || typeof item !== 'object') return item;
+      const title = item.title || item.name || '';
+      return { ...item, title: title || item.title, name: item.name || title };
+    });
+  }
   if (!transaction.cart) {
-    transaction.cart = cart;
+    transaction.cart = normalizedCart;
+  } else {
+    transaction.cart = normalizedCart;
   }
 
   transaction.api_token = apiToken;
