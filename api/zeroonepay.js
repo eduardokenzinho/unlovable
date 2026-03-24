@@ -80,66 +80,67 @@ module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('X-ZeroOnePay-Handler', 'api/zeroonepay.js');
 
-  const apiToken = process.env.ZEROONEPAY_API_TOKEN;
-  if (!apiToken) {
-    res.status(500).json({ error: 'ZEROONEPAY_API_TOKEN nao configurado no servidor.' });
-    return;
-  }
-
-  const baseUrl = (process.env.ZEROONEPAY_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, '');
-  const method = (req.method || 'GET').toUpperCase();
-  const resource = String(req.query?.resource || '').toLowerCase();
-
-  if (method === 'GET') {
-    if (!['products', 'balance', 'transactions'].includes(resource)) {
-      res.status(400).json({ error: 'Recurso invalido. Use ?resource=products, ?resource=balance ou ?resource=transactions.' });
+  try {
+    const apiToken = process.env.ZEROONEPAY_API_TOKEN;
+    if (!apiToken) {
+      res.status(500).json({ error: 'ZEROONEPAY_API_TOKEN nao configurado no servidor.' });
       return;
     }
-    const query = { ...req.query, api_token: apiToken };
-    delete query.resource;
-    const headers = { 'Content-Type': 'application/json' };
 
-    if (resource === 'transactions') {
-      const id = query.id || query.transaction_id || query.transaction_hash;
-      if (id) {
-        delete query.id;
-        delete query.transaction_id;
-        delete query.transaction_hash;
-        const url = `${baseUrl}/transactions/${encodeURIComponent(String(id))}?${new URLSearchParams({ api_token: apiToken, ...query })}`;
+    const baseUrl = (process.env.ZEROONEPAY_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, '');
+    const method = (req.method || 'GET').toUpperCase();
+    const resource = String(req.query?.resource || '').toLowerCase();
+
+    if (method === 'GET') {
+      if (!['products', 'balance', 'transactions'].includes(resource)) {
+        res.status(400).json({ error: 'Recurso invalido. Use ?resource=products, ?resource=balance ou ?resource=transactions.' });
+        return;
+      }
+      const query = { ...req.query, api_token: apiToken };
+      delete query.resource;
+      const headers = { 'Content-Type': 'application/json' };
+
+      if (resource === 'transactions') {
+        const id = query.id || query.transaction_id || query.transaction_hash;
+        if (id) {
+          delete query.id;
+          delete query.transaction_id;
+          delete query.transaction_hash;
+          const url = `${baseUrl}/transactions/${encodeURIComponent(String(id))}?${new URLSearchParams({ api_token: apiToken, ...query })}`;
+          const response = await fetch(url, { method: 'GET', headers });
+          const text = await response.text();
+          if (response.status !== 404) {
+            res.status(response.status || 200).send(text);
+            return;
+          }
+        }
+        const url = `${baseUrl}/transactions?${new URLSearchParams(query)}`;
         const response = await fetch(url, { method: 'GET', headers });
         const text = await response.text();
-        if (response.status !== 404) {
-          res.status(response.status || 200).send(text);
-          return;
-        }
+        res.status(response.status || 200).send(text);
+        return;
       }
-      const url = `${baseUrl}/transactions?${new URLSearchParams(query)}`;
+
+      const url = `${baseUrl}/${resource}?${new URLSearchParams(query)}`;
       const response = await fetch(url, { method: 'GET', headers });
       const text = await response.text();
       res.status(response.status || 200).send(text);
       return;
     }
 
-    const url = `${baseUrl}/${resource}?${new URLSearchParams(query)}`;
-    const response = await fetch(url, { method: 'GET', headers });
-    const text = await response.text();
-    res.status(response.status || 200).send(text);
-    return;
-  }
+    if (method !== 'POST') {
+      res.status(405).json({ error: 'Metodo nao permitido.' });
+      return;
+    }
 
-  if (method !== 'POST') {
-    res.status(405).json({ error: 'Metodo nao permitido.' });
-    return;
-  }
-
-  const input = await readBody(req);
-  const transaction = input?.transaction && typeof input.transaction === 'object' ? input.transaction : {};
-  const customer =
-    transaction?.customer && typeof transaction.customer === 'object'
-      ? transaction.customer
-      : input?.customer && typeof input.customer === 'object'
-        ? input.customer
-        : {};
+    const input = await readBody(req);
+    const transaction = input?.transaction && typeof input.transaction === 'object' ? input.transaction : {};
+    const customer =
+      transaction?.customer && typeof transaction.customer === 'object'
+        ? transaction.customer
+        : input?.customer && typeof input.customer === 'object'
+          ? input.customer
+          : {};
 
   const name = String(customer?.name || input?.name || '').trim();
   const email = String(customer?.email || input?.email || '').trim();
@@ -274,12 +275,16 @@ module.exports = async (req, res) => {
     }
   }
 
-  const response = await fetch(`${baseUrl}/transactions?${new URLSearchParams({ api_token: apiToken })}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(gatewayPayload),
-  });
+    const response = await fetch(`${baseUrl}/transactions?${new URLSearchParams({ api_token: apiToken })}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(gatewayPayload),
+    });
 
-  const text = await response.text();
-  res.status(response.status || 200).send(text);
+    const text = await response.text();
+    res.status(response.status || 200).send(text);
+  } catch (err) {
+    console.error('ZEROONEPAY_HANDLER_ERROR', err);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
 };
