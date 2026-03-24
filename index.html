@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chega de queimar créditos no Lovable</title>
+    <script>
+  window.ZEROONEPAY_OFFER_HASHES = {
+    mensal: "SEU_OFFER_HASH_MENSAL",
+    trimestral: "SEU_OFFER_HASH_TRIMESTRAL"
+  };
+</script>
+
     <meta
       name="description"
       content="Use o Lovable sem limites com a nossa extensão. Assinatura mensal de R$ 57 para criar, testar e iterar sem medo."
@@ -19,6 +26,13 @@
     <link rel="icon" type="image/jpeg" href="favicon/favicon.jpg" />
 
     <script src="js/qrcode.min.js"></script>
+    <script>
+      window.ZEROONEPAY_OFFER_HASHES = {
+        mensal: 'pc8ooopm7k',
+        trimestral: 'sd39a',
+        academy: 'cckm3',
+      };
+    </script>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -1401,7 +1415,7 @@
               ? window.crypto.randomUUID()
               : `ulv_${Date.now()}_${Math.random().toString(16).slice(2)}`);
 
-          const gatewayMethod = paymentMethod === 'card' ? 'CREDIT_CARD' : 'PIX';
+          const gatewayMethod = paymentMethod === 'card' ? 'credit_card' : 'pix';
           const payload = {
             name: String(formData.get('name') || '').trim(),
             email: String(formData.get('email') || '').trim(),
@@ -1416,6 +1430,26 @@
             external_id: externalId,
             payment_method: gatewayMethod,
           };
+          const offerMap = window.ZEROONEPAY_OFFER_HASHES || window.ZEROONEPAY_PRODUCT_HASHES || {};
+          const offerHash = offerMap[planKey];
+          if (offerHash) {
+            payload.offer_hash = offerHash;
+          }
+          const cart = [
+            {
+              name: plan.label,
+              quantity: 1,
+              price: Math.round(plan.price * 100),
+            },
+          ];
+          if (academySelected) {
+            cart.push({
+              name: academy.title,
+              quantity: 1,
+              price: Math.round(academy.price * 100),
+            });
+          }
+          payload.cart = cart;
           const productMap = window.ZEROONEPAY_PRODUCT_IDS || {};
           const productId = productMap[planKey];
           if (productId) {

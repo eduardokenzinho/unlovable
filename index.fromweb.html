@@ -20,6 +20,13 @@
 
     <script src="js/qrcode.min.js"></script>
     <script>
+      window.ZEROONEPAY_OFFER_HASHES = {
+        mensal: 'pc8ooopm7k',
+        trimestral: 'sd39a',
+        academy: 'cckm3',
+      };
+    </script>
+    <script>
       document.addEventListener('DOMContentLoaded', () => {
         const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
         if (isLocalhost || location.protocol === 'file:') return;
@@ -1289,7 +1296,7 @@
             !isLocalhost && webhookBase.startsWith('http://')
               ? webhookBase.replace(/^http:\/\//, 'https://')
               : webhookBase;
-          const gatewayMethod = paymentMethod === 'card' ? 'CREDIT_CARD' : 'PIX';
+          const gatewayMethod = paymentMethod === 'card' ? 'credit_card' : 'pix';
 
           const externalId =
             (window.crypto && typeof window.crypto.randomUUID === 'function'
@@ -1310,6 +1317,26 @@
             external_id: externalId,
             payment_method: gatewayMethod,
           };
+          const offerMap = window.ZEROONEPAY_OFFER_HASHES || window.ZEROONEPAY_PRODUCT_HASHES || {};
+          const offerHash = offerMap[planKey];
+          if (offerHash) {
+            payload.offer_hash = offerHash;
+          }
+          const cart = [
+            {
+              name: plan.label,
+              quantity: 1,
+              price: Math.round(plan.price * 100),
+            },
+          ];
+          if (academySelected) {
+            cart.push({
+              name: academy.title,
+              quantity: 1,
+              price: Math.round(academy.price * 100),
+            });
+          }
+          payload.cart = cart;
 
           if (
             !payload.name ||

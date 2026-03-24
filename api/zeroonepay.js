@@ -160,11 +160,14 @@ module.exports = async (req, res) => {
     transaction?.payment_method || input?.payment_method || input?.method || '',
   )
     .trim()
-    .toUpperCase();
-  if (paymentMethod === 'CARD') paymentMethod = 'CREDIT_CARD';
-  if (paymentMethod === 'CARTAO' || paymentMethod === 'CARTAO_CREDITO') paymentMethod = 'CREDIT_CARD';
-  if (paymentMethod === 'PIX') paymentMethod = 'PIX';
-  if (!paymentMethod) paymentMethod = 'PIX';
+    .toLowerCase();
+  if (paymentMethod === 'card') paymentMethod = 'credit_card';
+  if (paymentMethod === 'cartao' || paymentMethod === 'cartao_credito' || paymentMethod === 'creditcard') {
+    paymentMethod = 'credit_card';
+  }
+  if (paymentMethod === 'pix') paymentMethod = 'pix';
+  if (paymentMethod === 'boleto' || paymentMethod === 'billet') paymentMethod = 'billet';
+  if (!paymentMethod) paymentMethod = 'pix';
 
   if (!name || !email || !document || !amountCents || !paymentMethod) {
     res.status(422).json({ error: 'Campos obrigatorios ausentes.' });
@@ -188,6 +191,29 @@ module.exports = async (req, res) => {
   }
   if (!transaction.payment_method) {
     transaction.payment_method = paymentMethod;
+  }
+
+  const offerHash = String(
+    transaction?.offer_hash ||
+      input?.offer_hash ||
+      input?.product_hash ||
+      input?.product_id ||
+      input?.hash ||
+      '',
+  ).trim();
+  if (!offerHash) {
+    res.status(422).json({ error: 'offer_hash obrigatorio.' });
+    return;
+  }
+  transaction.offer_hash = offerHash;
+
+  const cart = transaction?.cart || input?.cart;
+  if (!cart || (Array.isArray(cart) && cart.length === 0)) {
+    res.status(422).json({ error: 'cart obrigatorio.' });
+    return;
+  }
+  if (!transaction.cart) {
+    transaction.cart = cart;
   }
 
   transaction.api_token = apiToken;
