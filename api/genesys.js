@@ -203,16 +203,16 @@ module.exports = async (req, res) => {
   }
 
   const baseUrl = (process.env.GENESYS_BASE_URL || 'https://api.genesys.finance').replace(/\/+$/, '');
-  let paymentMethodOptions = null;
-  if (body.payment_method_options && typeof body.payment_method_options === 'object') {
-    paymentMethodOptions = body.payment_method_options;
-  } else if (process.env.GENESYS_PAYMENT_METHOD_OPTIONS) {
-    try {
-      paymentMethodOptions = JSON.parse(process.env.GENESYS_PAYMENT_METHOD_OPTIONS);
-    } catch (err) {
-      paymentMethodOptions = null;
-    }
-  }
+  const paymentMethod = 'pix';
+  const paymentMethodOptions = { pix: { expires_in: 3600 } };
+  const generatePix =
+    body.generate_pix === true ||
+    body.generate_pix === 'true' ||
+    process.env.GENESYS_GENERATE_PIX === 'true';
+  const amountAsString =
+    body.amount_as_string === true ||
+    body.amount_as_string === 'true' ||
+    process.env.GENESYS_AMOUNT_AS_STRING === 'true';
 
   const plan = plans[planKey];
   const academy = {
@@ -222,7 +222,8 @@ module.exports = async (req, res) => {
     title: 'Unlovable Academy',
   };
 
-  const totalAmount = Number((plan.price + (academySelected ? academy.price : 0)).toFixed(2));
+  const totalAmountRaw = (plan.price + (academySelected ? academy.price : 0)).toFixed(2);
+  const totalAmount = amountAsString ? totalAmountRaw : Number(totalAmountRaw);
 
   const externalIdInput = String(body.external_id || '').trim();
   const externalId =
@@ -238,14 +239,15 @@ module.exports = async (req, res) => {
   const transaction = {
     external_id: externalId,
     total_amount: totalAmount,
-    payment_method: 'PIX',
+    payment_method: paymentMethod,
+    description: 'Assinatura Unlovable',
     webhook_url: webhookUrl,
     items: [
       {
         id: planKey,
         title: plan.title,
         description: plan.label,
-        price: Number(plan.price.toFixed(2)),
+        price: amountAsString ? plan.price.toFixed(2) : Number(plan.price.toFixed(2)),
         quantity: 1,
         is_physical: false,
       },
@@ -260,8 +262,9 @@ module.exports = async (req, res) => {
     },
   };
 
-  if (paymentMethodOptions) {
-    transaction.payment_method_options = paymentMethodOptions;
+  transaction.payment_method_options = paymentMethodOptions;
+  if (generatePix) {
+    transaction.generate_pix = true;
   }
 
   if (!webhookUrl) {
@@ -273,7 +276,7 @@ module.exports = async (req, res) => {
       id: academy.id,
       title: academy.title,
       description: academy.label,
-      price: Number(academy.price.toFixed(2)),
+      price: amountAsString ? academy.price.toFixed(2) : Number(academy.price.toFixed(2)),
       quantity: 1,
       is_physical: false,
     });
@@ -285,6 +288,8 @@ module.exports = async (req, res) => {
       'api-secret': apiSecret,
     };
     const url = `${baseUrl}/v1/transactions`;
+    console.log('PAYLOAD_ENVIADO:', JSON.stringify(body));
+    console.log('PAYLOAD_AMOUNT_TYPE:', typeof totalAmount);
     logSafeHeaders('POST', url, headers);
     const response = await fetch(url, {
       method: 'POST',
@@ -302,6 +307,13 @@ module.exports = async (req, res) => {
     };
 
     let finalData = data;
+    const hasPixPayload = (value) => {
+      const normalized = normalizePix(sanitizePix(value));
+      if (!normalized || typeof normalized !== 'object') return false;
+      const pix = normalized.pix;
+      return Boolean(pix && typeof pix === 'object' && pix.payload);
+    };
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     if (data && typeof data === 'object' && data.id) {
       try {
         const detailsRes = await fetch(`${baseUrl}/v1/transactions/${data.id}`, {
@@ -333,6 +345,46 @@ module.exports = async (req, res) => {
             debug.pix_fetched = true;
           }
         } catch (err) {}
+      }
+
+      if (!hasPixPayload(finalData)) {
+        const maxAttempts = 5;
+        for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+          await sleep(1200);
+          try {
+            const detailsRes = await fetch(`${baseUrl}/v1/transactions/${data.id}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'api-secret': apiSecret,
+              },
+            });
+            const details = await detailsRes.json().catch(() => null);
+            if (details && typeof details === 'object') {
+              finalData = details;
+              debug.details_fetched = true;
+            }
+          } catch (err) {}
+
+          if (finalData && typeof finalData === 'object' && !finalData.pix) {
+            try {
+              const pixRes = await fetch(`${baseUrl}/v1/transactions/${data.id}/pix`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'api-secret': apiSecret,
+                },
+              });
+              const pixData = await pixRes.json().catch(() => null);
+              if (pixData && typeof pixData === 'object') {
+                finalData.pix = pixData;
+                debug.pix_fetched = true;
+              }
+            } catch (err) {}
+          }
+
+          if (hasPixPayload(finalData)) break;
+        }
       }
     }
 
