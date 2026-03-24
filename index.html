@@ -1152,12 +1152,90 @@
         const pixTransaction = document.getElementById('pix-transaction');
         const homeView = document.getElementById('home-view');
         const checkoutView = document.getElementById('checkout');
+        const documentInput = form.querySelector('input[name="document"]');
+        const phoneInput = form.querySelector('input[name="phone"]');
         const paymentTabs = form.querySelectorAll('.payment-tab');
         const paymentPanels = form.querySelectorAll('.payment-panel');
         let paymentMethod = 'pix';
 
         const formatBRL = (value) =>
           value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const onlyDigits = (value) => String(value || '').replace(/\D+/g, '');
+
+        const formatCPF = (digits) => {
+          const d = digits.slice(0, 11);
+          const p1 = d.slice(0, 3);
+          const p2 = d.slice(3, 6);
+          const p3 = d.slice(6, 9);
+          const p4 = d.slice(9, 11);
+          let out = p1;
+          if (p2) out += `.${p2}`;
+          if (p3) out += `.${p3}`;
+          if (p4) out += `-${p4}`;
+          return out;
+        };
+
+        const formatCNPJ = (digits) => {
+          const d = digits.slice(0, 14);
+          const p1 = d.slice(0, 2);
+          const p2 = d.slice(2, 5);
+          const p3 = d.slice(5, 8);
+          const p4 = d.slice(8, 12);
+          const p5 = d.slice(12, 14);
+          let out = p1;
+          if (p2) out += `.${p2}`;
+          if (p3) out += `.${p3}`;
+          if (p4) out += `/${p4}`;
+          if (p5) out += `-${p5}`;
+          return out;
+        };
+
+        const formatPhone = (digits) => {
+          const d = digits.slice(0, 11);
+          const d1 = d.slice(0, 2);
+          const d2 = d.slice(2, 7);
+          const d3 = d.slice(7, 11);
+          let out = '';
+          if (d1) out += `(${d1}`;
+          if (d1.length === 2) out += ')';
+          if (d2) out += ` ${d2}`;
+          if (d3) out += `-${d3}`;
+          return out;
+        };
+
+        const isAllSameDigits = (digits) => /^(\d)\1+$/.test(digits);
+
+        const isValidCPF = (digits) => {
+          if (digits.length !== 11 || isAllSameDigits(digits)) return false;
+          const nums = digits.split('').map((n) => Number(n));
+          let sum = 0;
+          for (let i = 0; i < 9; i += 1) sum += nums[i] * (10 - i);
+          let check = (sum * 10) % 11;
+          if (check === 10) check = 0;
+          if (check !== nums[9]) return false;
+          sum = 0;
+          for (let i = 0; i < 10; i += 1) sum += nums[i] * (11 - i);
+          check = (sum * 10) % 11;
+          if (check === 10) check = 0;
+          return check === nums[10];
+        };
+
+        const isValidCNPJ = (digits) => {
+          if (digits.length !== 14 || isAllSameDigits(digits)) return false;
+          const nums = digits.split('').map((n) => Number(n));
+          const weights1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+          const weights2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+          let sum = 0;
+          for (let i = 0; i < 12; i += 1) sum += nums[i] * weights1[i];
+          let remainder = sum % 11;
+          let check = remainder < 2 ? 0 : 11 - remainder;
+          if (check !== nums[12]) return false;
+          sum = 0;
+          for (let i = 0; i < 13; i += 1) sum += nums[i] * weights2[i];
+          remainder = sum % 11;
+          check = remainder < 2 ? 0 : 11 - remainder;
+          return check === nums[13];
+        };
 
         const updateSummary = (planKey) => {
           const plan = planMap[planKey] || planMap.mensal;
@@ -1197,6 +1275,20 @@
             if (planKey) selectPlan(planKey);
           });
         });
+
+        if (documentInput) {
+          documentInput.addEventListener('input', () => {
+            const digits = onlyDigits(documentInput.value);
+            documentInput.value = digits.length <= 11 ? formatCPF(digits) : formatCNPJ(digits);
+          });
+        }
+
+        if (phoneInput) {
+          phoneInput.addEventListener('input', () => {
+            const digits = onlyDigits(phoneInput.value);
+            phoneInput.value = formatPhone(digits);
+          });
+        }
 
         const showStatus = (message, isError = false) => {
           statusEl.textContent = message;
@@ -1285,8 +1377,19 @@
           const plan = planMap[planKey] || planMap.mensal;
 
           const documentRaw = String(formData.get('document') || '').trim();
-          const documentDigits = documentRaw.replace(/\D+/g, '');
+          const documentDigits = onlyDigits(documentRaw);
           const inferredDocumentType = documentDigits.length === 14 ? 'CNPJ' : 'CPF';
+          const academySelected = academyToggle ? academyToggle.checked : false;
+          const total = plan.price + (academySelected ? academy.price : 0);
+          const amountCents = Math.round(total * 100);
+          const webhookBase =
+            window.GENESYS_WEBHOOK_URL || `${window.location.origin}/api/genesys-webhook`;
+          const isLocalhost =
+            window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const webhookUrl =
+            !isLocalhost && webhookBase.startsWith('http://')
+              ? webhookBase.replace(/^http:\/\//, 'https://')
+              : webhookBase;
 
           const externalId =
             (window.crypto && typeof window.crypto.randomUUID === 'function'
@@ -1297,11 +1400,13 @@
             name: String(formData.get('name') || '').trim(),
             email: String(formData.get('email') || '').trim(),
             email_confirm: String(formData.get('email_confirm') || '').trim(),
-            phone: String(formData.get('phone') || '').trim(),
+            phone: onlyDigits(formData.get('phone')),
             document_type: inferredDocumentType,
-            document: documentRaw,
+            document: documentDigits,
             plan: planKey,
-            academy: academyToggle ? academyToggle.checked : false,
+            academy: academySelected,
+            amount: amountCents,
+            webhook_url: webhookUrl,
             external_id: externalId,
           };
 
@@ -1318,6 +1423,18 @@
           }
           if (payload.email !== payload.email_confirm) {
             showStatus('Os e-mails não conferem. Confira e tente novamente.', true);
+            return;
+          }
+          if (documentDigits.length !== 11 && documentDigits.length !== 14) {
+            showStatus('Por favor, confira o seu CPF/CNPJ', true);
+            return;
+          }
+          if (documentDigits.length === 11 && !isValidCPF(documentDigits)) {
+            showStatus('Por favor, confira o seu CPF/CNPJ', true);
+            return;
+          }
+          if (documentDigits.length === 14 && !isValidCNPJ(documentDigits)) {
+            showStatus('Por favor, confira o seu CPF/CNPJ', true);
             return;
           }
 
