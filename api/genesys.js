@@ -212,8 +212,7 @@ module.exports = async (req, res) => {
     title: 'Unlovable Academy',
   };
 
-  // Gateway costuma exigir valores em centavos
-  const totalAmount = Math.round((plan.price + (academySelected ? academy.price : 0)) * 100);
+  const totalAmount = Number((plan.price + (academySelected ? academy.price : 0)).toFixed(2));
 
   const externalIdInput = String(body.external_id || '').trim();
   const externalId =
@@ -236,7 +235,7 @@ module.exports = async (req, res) => {
         id: planKey,
         title: plan.title,
         description: plan.label,
-        price: Math.round(plan.price * 100),
+        price: Number(plan.price.toFixed(2)),
         quantity: 1,
         is_physical: false,
       },
@@ -260,7 +259,7 @@ module.exports = async (req, res) => {
       id: academy.id,
       title: academy.title,
       description: academy.label,
-      price: Math.round(academy.price * 100),
+      price: Number(academy.price.toFixed(2)),
       quantity: 1,
       is_physical: false,
     });
