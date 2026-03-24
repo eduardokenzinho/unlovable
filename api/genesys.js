@@ -203,6 +203,16 @@ module.exports = async (req, res) => {
   }
 
   const baseUrl = (process.env.GENESYS_BASE_URL || 'https://api.genesys.finance').replace(/\/+$/, '');
+  let paymentMethodOptions = null;
+  if (body.payment_method_options && typeof body.payment_method_options === 'object') {
+    paymentMethodOptions = body.payment_method_options;
+  } else if (process.env.GENESYS_PAYMENT_METHOD_OPTIONS) {
+    try {
+      paymentMethodOptions = JSON.parse(process.env.GENESYS_PAYMENT_METHOD_OPTIONS);
+    } catch (err) {
+      paymentMethodOptions = null;
+    }
+  }
 
   const plan = plans[planKey];
   const academy = {
@@ -249,6 +259,10 @@ module.exports = async (req, res) => {
       document,
     },
   };
+
+  if (paymentMethodOptions) {
+    transaction.payment_method_options = paymentMethodOptions;
+  }
 
   if (!webhookUrl) {
     delete transaction.webhook_url;
