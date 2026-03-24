@@ -29,7 +29,8 @@ module.exports = async (req, res) => {
   res.setHeader('X-Genesys-Handler', 'api/genesys.js');
   res.setHeader('X-Genesys-Handler-Version', '2026-03-24');
 
-  const logSafeHeaders = (headers) => {
+  const logSafeHeaders = (method, url, headers) => {
+    console.log(`[REQUEST] ${method} para ${url}`);
     const safeHeaders = { ...headers };
     const authKey = safeHeaders.Authorization ? 'Authorization' : safeHeaders['api-secret'] ? 'api-secret' : '';
     if (authKey) {
@@ -77,6 +78,7 @@ module.exports = async (req, res) => {
         obj.payload ||
         obj.copy_paste ||
         obj.copia_cola ||
+        obj.pix_copy_and_paste ||
         obj.code ||
         obj.copy_and_paste ||
         obj.qr_code ||
@@ -88,6 +90,9 @@ module.exports = async (req, res) => {
     };
     const candidate = data.pix || data.payment_details || data.payment || data.charge || data.data || data;
     let payload = pick(candidate) || pick(data);
+    if (!payload && data.point_of_interaction && data.point_of_interaction.transaction_data) {
+      payload = data.point_of_interaction.transaction_data.qr_code || data.point_of_interaction.transaction_data.qr_code_base64 || '';
+    }
     if (typeof candidate === 'string') payload = candidate;
     if (!payload) payload = deepFindPix(data);
     if (payload) data.pix = { payload };
@@ -112,8 +117,9 @@ module.exports = async (req, res) => {
         'Content-Type': 'application/json',
         'api-secret': apiSecret,
       };
-      logSafeHeaders(headers);
-      const response = await fetch(baseUrl + '/v1/transactions/' + id, {
+      const url = baseUrl + '/v1/transactions/' + id;
+      logSafeHeaders('GET', url, headers);
+      const response = await fetch(url, {
         method: 'GET',
         headers,
       });
@@ -206,7 +212,8 @@ module.exports = async (req, res) => {
     title: 'Unlovable Academy',
   };
 
-  const totalAmount = plan.price + (academySelected ? academy.price : 0);
+  // Gateway costuma exigir valores em centavos
+  const totalAmount = Math.round((plan.price + (academySelected ? academy.price : 0)) * 100);
 
   const externalIdInput = String(body.external_id || '').trim();
   const externalId =
@@ -229,7 +236,7 @@ module.exports = async (req, res) => {
         id: planKey,
         title: plan.title,
         description: plan.label,
-        price: plan.price,
+        price: Math.round(plan.price * 100),
         quantity: 1,
         is_physical: false,
       },
@@ -253,7 +260,7 @@ module.exports = async (req, res) => {
       id: academy.id,
       title: academy.title,
       description: academy.label,
-      price: academy.price,
+      price: Math.round(academy.price * 100),
       quantity: 1,
       is_physical: false,
     });
@@ -264,8 +271,9 @@ module.exports = async (req, res) => {
       'Content-Type': 'application/json',
       'api-secret': apiSecret,
     };
-    logSafeHeaders(headers);
-    const response = await fetch(`${baseUrl}/v1/transactions`, {
+    const url = `${baseUrl}/v1/transactions`;
+    logSafeHeaders('POST', url, headers);
+    const response = await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify(transaction),
