@@ -38,6 +38,29 @@ module.exports = async (req, res) => {
   };
   const normalizePix = (data) => {
     if (!data || typeof data !== 'object') return data;
+    const looksLikePix = (value) => {
+      if (typeof value !== 'string') return false;
+      const v = value.trim();
+      return v.startsWith('000201') || v.includes('br.gov.bcb.pix');
+    };
+    const deepFindPix = (obj, depth = 0) => {
+      if (!obj || depth > 6) return '';
+      if (typeof obj === 'string') return looksLikePix(obj) ? obj : '';
+      if (Array.isArray(obj)) {
+        for (const item of obj) {
+          const found = deepFindPix(item, depth + 1);
+          if (found) return found;
+        }
+        return '';
+      }
+      if (typeof obj === 'object') {
+        for (const key of Object.keys(obj)) {
+          const found = deepFindPix(obj[key], depth + 1);
+          if (found) return found;
+        }
+      }
+      return '';
+    };
     const pick = (obj) => {
       if (!obj || typeof obj !== 'object') return '';
       return (
@@ -45,6 +68,8 @@ module.exports = async (req, res) => {
         obj.copy_paste ||
         obj.copia_cola ||
         obj.code ||
+        obj.copy_and_paste ||
+        obj.qr_code ||
         obj.emv ||
         obj.qr_code_text ||
         obj.pix_code ||
@@ -54,6 +79,7 @@ module.exports = async (req, res) => {
     const candidate = data.pix || data.payment_details || data.payment || data.charge || data.data || data;
     let payload = pick(candidate) || pick(data);
     if (typeof candidate === 'string') payload = candidate;
+    if (!payload) payload = deepFindPix(data);
     if (payload) data.pix = { payload };
     return data;
   };
@@ -80,6 +106,7 @@ module.exports = async (req, res) => {
         },
       });
       const data = await response.json().catch(() => null);
+      console.log('RESPOSTA_GATEWAY:', JSON.stringify(data, null, 2));
       if (data && typeof data === 'object' && !data.pix) {
         try {
           const pixRes = await fetch(baseUrl + '/v1/transactions/' + id + '/pix', {
@@ -231,6 +258,7 @@ module.exports = async (req, res) => {
     });
 
     const data = await response.json().catch(() => null);
+    console.log('RESPOSTA_GATEWAY:', JSON.stringify(data, null, 2));
     const debug = {
       handler: 'api/genesys.js',
       webhook_sent: Boolean(webhookUrl),
