@@ -135,9 +135,35 @@ module.exports = async (req, res) => {
     });
 
     const data = await response.json().catch(() => null);
-    const debug = { handler: 'api/genesys.js', webhook_sent: false };
-    if (data && typeof data === 'object') {
-      res.status(response.status).json({ ...data, debug });
+    const debug = { handler: 'api/genesys.js', webhook_sent: Boolean(webhookUrl), details_fetched: false };
+    let finalData = data;
+
+    if (
+      data &&
+      typeof data === 'object' &&
+      data.id &&
+      (!data.pix || (!data.pix.payload && !data.pix.copy_paste && !data.pix.qr_code))
+    ) {
+      try {
+        const detailsRes = await fetch(`${baseUrl}/v1/transactions/${data.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-secret': apiSecret,
+          },
+        });
+        const details = await detailsRes.json().catch(() => null);
+        if (details && typeof details === 'object') {
+          finalData = details;
+          debug.details_fetched = true;
+        }
+      } catch (err) {
+        debug.details_fetched = false;
+      }
+    }
+
+    if (finalData && typeof finalData === 'object') {
+      res.status(response.status).json({ ...finalData, debug });
       return;
     }
     res.status(response.status).json({ error: 'Resposta inválida do gateway.', debug });

@@ -1254,18 +1254,43 @@
               throw new Error(data && data.error ? data.error : 'Não foi possível gerar o PIX.');
             }
 
-            if (!data.pix || !data.pix.payload) {
-              throw new Error('Resposta inválida do gateway. Tente novamente.');
-            }
+            const extractPixPayload = (pix) => {
+              if (!pix || typeof pix !== 'object') return '';
+              return (
+                pix.payload ||
+                pix.copy_paste ||
+                pix.copia_cola ||
+                pix.code ||
+                pix.qr_code_text ||
+                ''
+              );
+            };
 
-            const payloadPix = data.pix.payload;
-            pixCode.value = payloadPix;
+            const payloadPix = extractPixPayload(data.pix);
+            const qrBase64 =
+              data.pix && (data.pix.qr_code_base64 || data.pix.qr_code_image || data.pix.qr_code) || '';
+
+            if (!payloadPix && !qrBase64) {
+              const txId = data.id ? `Transação: ${data.id}` : '';
+              pixCode.value = '';
+              pixTransaction.textContent =
+                txId || 'Transação criada, mas o gateway não retornou o código PIX.';
+              pixCard.hidden = false;
+              showStatus('PIX criado, mas o código não veio. Verifique no painel do gateway.', true);
+              return;
+            }
+            pixCode.value = payloadPix || '';
             pixTransaction.textContent = data.id
               ? `Transação: ${data.id}`
               : 'Transação criada com sucesso.';
             if (pixQr) {
               pixQr.innerHTML = '';
-              if (window.QRCode) {
+              if (qrBase64) {
+                const img = document.createElement('img');
+                img.alt = 'QR Code PIX';
+                img.src = qrBase64.startsWith('data:') ? qrBase64 : `data:image/png;base64,${qrBase64}`;
+                pixQr.appendChild(img);
+              } else if (window.QRCode && payloadPix) {
                 new QRCode(pixQr, {
                   text: payloadPix,
                   width: 180,
@@ -1274,7 +1299,7 @@
                   colorLight: '#ffffff',
                   correctLevel: QRCode.CorrectLevel.M,
                 });
-              } else {
+              } else if (payloadPix) {
                 const img = document.createElement('img');
                 img.alt = 'QR Code PIX';
                 img.src =
