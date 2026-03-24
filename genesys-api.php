@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json; charset=utf-8');\r\nheader('X-Genesys-Handler: genesys-api.php');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   http_response_code(405);
@@ -136,3 +136,4 @@ if ($response === false) {
 curl_close($ch);
 http_response_code($httpCode > 0 ? $httpCode : 200);
 echo $response;
+

@@ -2,6 +2,7 @@ const { randomUUID } = require('crypto');
 
 module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('X-Genesys-Handler', 'api/genesys.js');
 
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Método não permitido.' });
@@ -123,6 +124,7 @@ module.exports = async (req, res) => {
     const data = await response.json().catch(() => null);
     res.status(response.status).json(data || { error: 'Resposta inválida do gateway.' });
   } catch (error) {
-    res.status(500).json({ error: 'Falha ao conectar no gateway.' });
+    res\r\n      .status(500)\r\n      .json({ error: 'Falha ao conectar no gateway.', debug: { webhook_disabled: true, handler: 'api/genesys.js' } });
   }
 };
+
