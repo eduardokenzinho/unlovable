@@ -1,7 +1,8 @@
 {
   "routes": [
     { "src": "/fb-api.php", "dest": "/api/fb" },
-    { "src": "/genesys-api.php", "dest": "/api/genesys" },
+    { "src": "/zeroonepay-api.php", "dest": "/api/zeroonepay" },
+    { "src": "/zeroonepay-webhook.php", "dest": "/api/zeroonepay-webhook" },
     { "handle": "filesystem" }
   ]
 }

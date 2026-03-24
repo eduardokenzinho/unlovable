@@ -1301,7 +1301,7 @@
         };
         const fetchPixById = async (id) => {
           try {
-            const res = await fetch(`/api/genesys?id=${encodeURIComponent(id)}`);
+            const res = await fetch(`/api/zeroonepay?resource=transactions&id=${encodeURIComponent(id)}`);
             return await res.json().catch(() => null);
           } catch (err) {
             return null;
@@ -1333,20 +1333,35 @@
           return '';
         };
 
+        const extractPixPayload = (data) => {
+          if (!data || typeof data !== 'object') return '';
+          const direct =
+            data.pix_payload ||
+            data.pix_code ||
+            data.qr_code ||
+            data.qr_code_text ||
+            data.copy_paste ||
+            data.copy_and_paste ||
+            data.pix_copy_and_paste ||
+            (data.pix && (data.pix.payload || data.pix.code || data.pix.qr_code || data.pix.copy_and_paste)) ||
+            '';
+          if (typeof direct === 'string' && looksLikePix(direct)) return direct;
+          return deepFindString(data, looksLikePix) || '';
+        };
+
         const applyPix = (pixData) => {
-          const payloadPix =
-            pixData && typeof pixData.pix_payload === 'string' && looksLikePix(pixData.pix_payload)
-              ? pixData.pix_payload
-              : '';
+          const payloadPix = extractPixPayload(pixData);
           if (!payloadPix) return false;
 
           pixCode.value = payloadPix;
-          pixTransaction.textContent = pixData && pixData.transaction_id
-            ? `Transação: ${pixData.transaction_id}`
+          const transactionId =
+            (pixData && (pixData.transaction_id || pixData.id || pixData.transaction_hash)) || '';
+          pixTransaction.textContent = transactionId
+            ? `Transação: ${transactionId}`
             : 'Transação criada com sucesso.';
 
-          if (pixData && pixData.transaction_id) {
-            lastTransactionId = pixData.transaction_id;
+          if (transactionId) {
+            lastTransactionId = transactionId;
           }
 
           if (pixQr) {
@@ -1373,7 +1388,7 @@
           const total = plan.price + (academySelected ? academy.price : 0);
           const amountCents = Math.round(total * 100);
           const webhookBase =
-            window.GENESYS_WEBHOOK_URL || `${window.location.origin}/api/genesys-webhook`;
+            window.ZEROONEPAY_WEBHOOK_URL || `${window.location.origin}/api/zeroonepay-webhook`;
           const isLocalhost =
             window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
           const webhookUrl =
@@ -1399,6 +1414,11 @@
             webhook_url: webhookUrl,
             external_id: externalId,
           };
+          const productMap = window.ZEROONEPAY_PRODUCT_IDS || {};
+          const productId = productMap[planKey];
+          if (productId) {
+            payload.product_id = productId;
+          }
 
           if (
             !payload.name ||
@@ -1431,7 +1451,7 @@
           setLoading(true);
 
           try {
-            const endpoint = window.GENESYS_ENDPOINT || '/api/genesys';
+            const endpoint = window.ZEROONEPAY_ENDPOINT || '/api/zeroonepay';
             const response = await fetch(endpoint, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -1449,14 +1469,15 @@
               showStatus('Gerando Pix...', true);
             }
 
-            if (data && data.transaction_id) {
-              lastTransactionId = data.transaction_id;
+            const transactionId = data && (data.transaction_id || data.id || data.transaction_hash);
+            if (transactionId) {
+              lastTransactionId = transactionId;
             }
 
             if (!applyPix(data)) {
-              if (data.transaction_id) {
+              if (transactionId) {
                 pixCode.value = '';
-                pixTransaction.textContent = `Transação: ${data.transaction_id} (aguardando PIX)`;
+                pixTransaction.textContent = `Transação: ${transactionId} (aguardando PIX)`;
                 pixCard.hidden = false;
                 showStatus('PIX criado. Buscando código...', false);
 
@@ -1465,7 +1486,9 @@
                 const poll = async () => {
                   attempts += 1;
                   try {
-                    const res = await fetch(`/api/genesys?id=${encodeURIComponent(data.transaction_id)}`);
+                    const res = await fetch(
+                      `/api/zeroonepay?resource=transactions&id=${encodeURIComponent(transactionId)}`,
+                    );
                     const fresh = await res.json().catch(() => null);
                     if (fresh && applyPix(fresh)) {
                       showStatus(`PIX do ${plan.label} pronto!`, false);
