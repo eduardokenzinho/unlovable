@@ -174,25 +174,6 @@ module.exports = async (req, res) => {
     return;
   }
 
-  if (!transaction.customer || typeof transaction.customer !== 'object') {
-    transaction.customer = {};
-  }
-  transaction.customer.name = name;
-  transaction.customer.email = email;
-  transaction.customer.document = document;
-  if (phone) transaction.customer.phone = phone;
-
-  if (
-    transaction.amount === undefined &&
-    transaction.value === undefined &&
-    transaction.amount_cents === undefined
-  ) {
-    transaction.amount = amountCents;
-  }
-  if (!transaction.payment_method) {
-    transaction.payment_method = paymentMethod;
-  }
-
   const offerHash = String(
     transaction?.offer_hash ||
       input?.offer_hash ||
@@ -226,16 +207,39 @@ module.exports = async (req, res) => {
     normalizedCart = cart.map((item) => {
       if (!item || typeof item !== 'object') return item;
       const title = item.title || item.name || '';
-      return { ...item, title: title || item.title, name: item.name || title };
+      return {
+        ...item,
+        title: title || item.title,
+        name: item.name || title,
+        product_hash: item.product_hash || productHash,
+        offer_hash: item.offer_hash || offerHash,
+      };
     });
   }
-  if (!transaction.cart) {
-    transaction.cart = normalizedCart;
-  } else {
-    transaction.cart = normalizedCart;
-  }
+  const gatewayCustomer = {
+    name,
+    email,
+    document,
+  };
+  if (phone) gatewayCustomer.phone = phone;
 
-  transaction.api_token = apiToken;
+  const gatewayPayload = {
+    api_token: apiToken,
+    offer_hash: offerHash,
+    product_hash: productHash,
+    payment_method: paymentMethod,
+    customer: gatewayCustomer,
+    cart: normalizedCart,
+  };
+  if (transaction.amount !== undefined || input?.amount !== undefined) {
+    gatewayPayload.amount = amountCents;
+  }
+  if (input?.external_id || transaction?.external_id) {
+    gatewayPayload.external_id = input?.external_id || transaction?.external_id;
+  }
+  if (input?.webhook_url || transaction?.webhook_url) {
+    gatewayPayload.webhook_url = input?.webhook_url || transaction?.webhook_url;
+  }
 
   const itemIdentity = extractItemRequest(input, transaction);
   if (itemIdentity.id || itemIdentity.sku || itemIdentity.name) {
@@ -270,10 +274,10 @@ module.exports = async (req, res) => {
     }
   }
 
-  const response = await fetch(`${baseUrl}/transactions`, {
+  const response = await fetch(`${baseUrl}/transactions?${new URLSearchParams({ api_token: apiToken })}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(transaction),
+    body: JSON.stringify(gatewayPayload),
   });
 
   const text = await response.text();
