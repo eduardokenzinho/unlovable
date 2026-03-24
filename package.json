@@ -1,0 +1,9 @@
+{
+  "name": "unlovable",
+  "private": true,
+  "description": "Unlovable checkout and API utilities",
+  "version": "1.0.0",
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

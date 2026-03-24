@@ -18,6 +18,9 @@ if (!is_array($payload)) {
 
 $transactionHash = trim((string)($payload['transaction_hash'] ?? ''));
 $status = trim((string)($payload['status'] ?? ''));
+$amount = $payload['amount'] ?? null;
+$paymentMethod = $payload['payment_method'] ?? null;
+$paidAt = $payload['paid_at'] ?? null;
 
 if ($transactionHash === '' || $status === '') {
   http_response_code(422);
@@ -37,6 +40,9 @@ if (is_dir($logDir)) {
     'ip' => $_SERVER['REMOTE_ADDR'] ?? null,
     'transaction_hash' => $transactionHash,
     'status' => $status,
+    'amount' => $amount,
+    'payment_method' => $paymentMethod,
+    'paid_at' => $paidAt,
     'payload' => $payload,
   ];
   $line = json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
@@ -49,4 +55,7 @@ echo json_encode([
   'logged' => $logged,
   'transaction_hash' => $transactionHash,
   'status' => $status,
+  'amount' => $amount,
+  'payment_method' => $paymentMethod,
+  'paid_at' => $paidAt,
 ]);
