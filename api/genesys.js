@@ -3,8 +3,7 @@ const { randomUUID } = require('crypto');
 module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('X-Genesys-Handler', 'api/genesys.js');
-
-  try {
+  res.setHeader('X-Genesys-Handler-Version', '2026-03-24');
 
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Método não permitido.' });
@@ -63,8 +62,6 @@ module.exports = async (req, res) => {
 
   const baseUrl = (process.env.GENESYS_BASE_URL || 'https://api.genesys.finance').replace(/\/+$/, '');
   // Webhook desativado por padrão para evitar erro de validação no gateway.
-  // Caso queira reativar no futuro, volte a ler GENESYS_WEBHOOK_URL aqui.
-  const webhookUrl = '';
 
   const plan = plans[planKey];
   const academy = {
@@ -83,13 +80,10 @@ module.exports = async (req, res) => {
       ? randomUUID()
       : `ulv_${Date.now()}_${Math.random().toString(16).slice(2)}`);
 
-  const webhook = '';
-
   const transaction = {
     external_id: externalId,
     total_amount: totalAmount,
     payment_method: 'PIX',
-    webhook_url: undefined,
     items: [
       {
         id: planKey,
@@ -121,6 +115,11 @@ module.exports = async (req, res) => {
     });
   }
 
+  // Garante que webhook_url nunca seja enviado
+  if ('webhook_url' in transaction) {
+    delete transaction.webhook_url;
+  }
+
   try {
     const response = await fetch(`${baseUrl}/v1/transactions`, {
       method: 'POST',
@@ -132,14 +131,27 @@ module.exports = async (req, res) => {
     });
 
     const data = await response.json().catch(() => null);
-    res.status(response.status).json(data || { error: 'Resposta inválida do gateway.' });
+    const debug = { handler: 'api/genesys.js', webhook_sent: false };
+    if (data && typeof data === 'object') {
+      res.status(response.status).json({ ...data, debug });
+      return;
+    }
+    res.status(response.status).json({ error: 'Resposta inválida do gateway.', debug });
   } catch (error) {
     res.status(500).json({ error: 'Falha ao conectar no gateway.' });
   }
-  } catch (error) {
-    console.error('genesys handler error', error);
-    res.status(500).json({ error: 'Erro interno no servidor.' });
-  }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 
