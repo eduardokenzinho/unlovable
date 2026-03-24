@@ -1442,6 +1442,7 @@
           }
           const cart = [
             {
+              title: plan.label,
               name: plan.label,
               quantity: 1,
               price: Math.round(plan.price * 100),
@@ -1449,6 +1450,7 @@
           ];
           if (academySelected) {
             cart.push({
+              title: academy.title,
               name: academy.title,
               quantity: 1,
               price: Math.round(academy.price * 100),
