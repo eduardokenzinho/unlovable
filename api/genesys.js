@@ -235,6 +235,7 @@ module.exports = async (req, res) => {
       {
         id: '1',
         title: 'Assinatura Unlovable',
+        description: 'Assinatura Mensal Unlovable',
         price: totalAmount,
         quantity: 1,
         is_physical: false,
