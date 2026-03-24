@@ -69,7 +69,18 @@
       fbq('init', '1311060920880371');
       fbq('track', 'PageView');
     </script>
-    <script>\r\n      document.addEventListener('DOMContentLoaded', () => {\r\n        if (window.location.hash === '#checkout') {\r\n          const c = document.getElementById('checkout');\r\n          const h = document.getElementById('home-view');\r\n          if (c) c.hidden = false;\r\n          if (h) h.hidden = true;\r\n          document.body.classList.add('mode-checkout');\r\n        }\r\n      });\r\n    </script>\r\n  </head>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.location.hash === '#checkout') {
+          const c = document.getElementById('checkout');
+          const h = document.getElementById('home-view');
+          if (c) c.hidden = false;
+          if (h) h.hidden = true;
+          document.body.classList.add('mode-checkout');
+        }
+      });
+    </script>
+  </head>
   <body>
     <noscript>
       <img
@@ -1456,6 +1467,7 @@
     </script>
   </body>
 </html>
+
 
 
 
