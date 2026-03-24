@@ -232,7 +232,7 @@ module.exports = async (req, res) => {
     customer: gatewayCustomer,
     cart: normalizedCart,
   };
-  // Payload minimo para validar com o gateway.
+  gatewayPayload.amount = amountCents;
 
   const itemIdentity = extractItemRequest(input, transaction);
   if (itemIdentity.id || itemIdentity.sku || itemIdentity.name) {
