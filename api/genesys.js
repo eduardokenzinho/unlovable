@@ -321,9 +321,9 @@ module.exports = async (req, res) => {
       }
 
       if (!hasPixPayload(finalData)) {
-        const maxAttempts = 5;
+        const maxAttempts = 10;
         for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-          await sleep(1200);
+          await sleep(2000);
           try {
             const detailsRes = await fetch(`${baseUrl}/v1/transactions/${data.id}`, {
               method: 'GET',
