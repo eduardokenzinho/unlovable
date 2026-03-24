@@ -80,10 +80,15 @@ module.exports = async (req, res) => {
       ? randomUUID()
       : `ulv_${Date.now()}_${Math.random().toString(16).slice(2)}`);
 
+  const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+  const proto = req.headers['x-forwarded-proto'] || 'https';
+  const webhookUrl = host ? `${proto}://${host}/api/genesys-webhook` : '';
+
   const transaction = {
     external_id: externalId,
     total_amount: totalAmount,
     payment_method: 'PIX',
+    webhook_url: webhookUrl,
     items: [
       {
         id: planKey,
@@ -115,8 +120,7 @@ module.exports = async (req, res) => {
     });
   }
 
-  // Garante que webhook_url nunca seja enviado
-  if ('webhook_url' in transaction) {
+  if (!webhookUrl) {
     delete transaction.webhook_url;
   }
 
@@ -141,6 +145,7 @@ module.exports = async (req, res) => {
     res.status(500).json({ error: 'Falha ao conectar no gateway.' });
   }
 };
+
 
 
 
