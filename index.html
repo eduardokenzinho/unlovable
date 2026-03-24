@@ -1436,9 +1436,19 @@
             trimestral: 'sd39a',
             academy: 'cckm3',
           };
+          const hardcodedProducts = {
+            mensal: 'ilzmdfbet2',
+            trimestral: 'ilzmdfbet2',
+            academy: 'ilzmdfbet2',
+          };
           const offerHash = offerMap[planKey] || hardcodedOffers[planKey];
           if (offerHash) {
             payload.offer_hash = offerHash;
+          }
+          const productHash =
+            (window.ZEROONEPAY_PRODUCT_HASHES || {})[planKey] || hardcodedProducts[planKey];
+          if (productHash) {
+            payload.product_hash = productHash;
           }
           const cart = [
             {

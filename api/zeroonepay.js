@@ -207,6 +207,15 @@ module.exports = async (req, res) => {
   }
   transaction.offer_hash = offerHash;
 
+  const productHash = String(
+    transaction?.product_hash || input?.product_hash || input?.product_id || input?.hash || '',
+  ).trim();
+  if (!productHash) {
+    res.status(422).json({ error: 'product_hash obrigatorio.' });
+    return;
+  }
+  transaction.product_hash = productHash;
+
   const cart = transaction?.cart || input?.cart;
   if (!cart || (Array.isArray(cart) && cart.length === 0)) {
     res.status(422).json({ error: 'cart obrigatorio.' });
