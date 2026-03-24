@@ -203,16 +203,7 @@ module.exports = async (req, res) => {
   }
 
   const baseUrl = (process.env.GENESYS_BASE_URL || 'https://api.genesys.finance').replace(/\/+$/, '');
-  const paymentMethod = 'pix';
-  const paymentMethodOptions = { pix: { expires_in: 3600 } };
-  const generatePix =
-    body.generate_pix === true ||
-    body.generate_pix === 'true' ||
-    process.env.GENESYS_GENERATE_PIX === 'true';
-  const amountAsString =
-    body.amount_as_string === true ||
-    body.amount_as_string === 'true' ||
-    process.env.GENESYS_AMOUNT_AS_STRING === 'true';
+  const paymentMethod = 'PIX';
 
   const plan = plans[planKey];
   const academy = {
@@ -222,8 +213,7 @@ module.exports = async (req, res) => {
     title: 'Unlovable Academy',
   };
 
-  const totalAmountRaw = (plan.price + (academySelected ? academy.price : 0)).toFixed(2);
-  const totalAmount = amountAsString ? totalAmountRaw : Number(totalAmountRaw);
+  const totalAmount = Number((plan.price + (academySelected ? academy.price : 0)).toFixed(2));
 
   const externalIdInput = String(body.external_id || '').trim();
   const externalId =
@@ -240,14 +230,12 @@ module.exports = async (req, res) => {
     external_id: externalId,
     total_amount: totalAmount,
     payment_method: paymentMethod,
-    description: 'Assinatura Unlovable',
     webhook_url: webhookUrl,
     items: [
       {
-        id: planKey,
-        title: plan.title,
-        description: plan.label,
-        price: amountAsString ? plan.price.toFixed(2) : Number(plan.price.toFixed(2)),
+        id: '1',
+        title: 'Assinatura Unlovable',
+        price: totalAmount,
         quantity: 1,
         is_physical: false,
       },
@@ -257,29 +245,13 @@ module.exports = async (req, res) => {
       name,
       email,
       phone,
-      document_type: documentType,
+      document_type: 'CPF',
       document,
     },
   };
 
-  transaction.payment_method_options = paymentMethodOptions;
-  if (generatePix) {
-    transaction.generate_pix = true;
-  }
-
   if (!webhookUrl) {
     delete transaction.webhook_url;
-  }
-
-  if (academySelected) {
-    transaction.items.push({
-      id: academy.id,
-      title: academy.title,
-      description: academy.label,
-      price: amountAsString ? academy.price.toFixed(2) : Number(academy.price.toFixed(2)),
-      quantity: 1,
-      is_physical: false,
-    });
   }
 
   try {
@@ -389,7 +361,9 @@ module.exports = async (req, res) => {
     }
 
     if (finalData && typeof finalData === 'object') {
-      res.status(response.status).json({ ...normalizePix(sanitizePix(finalData)), debug });
+      const normalized = normalizePix(sanitizePix(finalData));
+      const pixPayload = normalized && normalized.pix && normalized.pix.payload ? normalized.pix.payload : undefined;
+      res.status(response.status).json({ ...normalized, pix_payload: pixPayload, debug });
       return;
     }
 
