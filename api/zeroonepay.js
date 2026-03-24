@@ -233,6 +233,12 @@ module.exports = async (req, res) => {
     cart: normalizedCart,
   };
   gatewayPayload.amount = amountCents;
+  if (input?.external_id || transaction?.external_id) {
+    gatewayPayload.external_id = input?.external_id || transaction?.external_id;
+  }
+  if (input?.webhook_url || transaction?.webhook_url) {
+    gatewayPayload.webhook_url = input?.webhook_url || transaction?.webhook_url;
+  }
 
   const itemIdentity = extractItemRequest(input, transaction);
   if (itemIdentity.id || itemIdentity.sku || itemIdentity.name) {
