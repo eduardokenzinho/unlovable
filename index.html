@@ -379,7 +379,7 @@
               </div>
               <div class="feature-text">
                 <h4>30 dias de liberdade</h4>
-                <p>Use a extensão Ã  vontade durante todo o mês da sua assinatura. Sem limites diários, sem contadores.</p>
+                <p>Use a extensão à vontade durante todo o mês da sua assinatura. Sem limites diários, sem contadores.</p>
               </div>
             </div>
 
@@ -771,7 +771,7 @@
               <summary>Eu realmente não gasto créditos do Lovable?</summary>
               <p>
                 O uso da extensão durante o seu mês de assinatura não consome créditos adicionais do Lovable. Você usa a
-                ferramenta sem aquele medo constante de "estar queimando crédito Ã  toa".
+                ferramenta sem aquele medo constante de "estar queimando crédito à toa".
               </p>
             </details>
 
@@ -1028,7 +1028,7 @@
     </main>
 
     <footer class="footer">
-      <div class="container footer-inner">Â© 2026 Unlovable. Todos os direitos reservados.</div>
+      <div class="container footer-inner">© 2026 Unlovable. Todos os direitos reservados.</div>
     </footer>
 
     <script>
@@ -1401,6 +1401,15 @@
           });
         }
 
+        if (pixCode) {
+          pixCode.addEventListener('focus', () => {
+            pixCode.select();
+          });
+          pixCode.addEventListener('click', () => {
+            pixCode.select();
+          });
+        }
+
         updateSummary('mensal');
 
         const setPayment = (method) => {
@@ -1438,6 +1447,8 @@
     </script>
   </body>
 </html>
+
+
 
 
 
