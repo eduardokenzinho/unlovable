@@ -965,6 +965,7 @@
                 </label>
                 <div class="pix-actions">
                   <button type="button" class="btn btn-ghost btn-full" id="pix-copy">Copiar código PIX</button>
+                  <button type="button" class="btn btn-ghost btn-full" id="pix-refresh">Buscar PIX</button>
                 </div>
                 <p class="checkout-note" id="pix-transaction"></p>
               </div>
@@ -1134,6 +1135,9 @@
         const pixQr = document.getElementById('pix-qr');
         const pixCode = document.getElementById('pix-code');
         const pixCopy = document.getElementById('pix-copy');
+        const pixRefresh = document.getElementById('pix-refresh');
+        let lastTransactionId = '';
+
         const pixTransaction = document.getElementById('pix-transaction');
         const homeView = document.getElementById('home-view');
         const checkoutView = document.getElementById('checkout');
@@ -1191,6 +1195,75 @@
         const setLoading = (isLoading) => {
           submitBtn.disabled = isLoading;
           submitBtn.textContent = isLoading ? 'Gerando PIX...' : 'Assinar agora';
+        };
+        const fetchPixById = async (id) => {
+          try {
+            const res = await fetch(`/api/genesys?id=${encodeURIComponent(id)}`);
+            return await res.json().catch(() => null);
+          } catch (err) {
+            return null;
+          }
+        };
+
+        const extractPixPayload = (pix) => {
+          if (!pix || typeof pix !== 'object') return '';
+          return (
+            pix.payload ||
+            pix.copy_paste ||
+            pix.copia_cola ||
+            pix.code ||
+            pix.qr_code_text ||
+            ''
+          );
+        };
+
+        const extractQrBase64 = (pix) => {
+          if (!pix || typeof pix !== 'object') return '';
+          return pix.qr_code_base64 || pix.qr_code_image || pix.qr_code || '';
+        };
+
+        const applyPix = (pixData) => {
+          const payloadPix = extractPixPayload(pixData && pixData.pix);
+          const qrBase64 = extractQrBase64(pixData && pixData.pix);
+          if (!payloadPix && !qrBase64) return false;
+
+          pixCode.value = payloadPix || '';
+          pixTransaction.textContent = pixData && pixData.id
+            ? `Transação: ${pixData.id}`
+            : 'Transação criada com sucesso.';
+
+          if (pixData && pixData.id) {
+            lastTransactionId = pixData.id;
+          }
+
+          if (pixQr) {
+            pixQr.innerHTML = '';
+            if (qrBase64) {
+              const img = document.createElement('img');
+              img.alt = 'QR Code PIX';
+              img.src = qrBase64.startsWith('data:') ? qrBase64 : `data:image/png;base64,${qrBase64}`;
+              pixQr.appendChild(img);
+            } else if (window.QRCode && payloadPix) {
+              new QRCode(pixQr, {
+                text: payloadPix,
+                width: 180,
+                height: 180,
+                colorDark: '#111111',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M,
+              });
+            } else if (payloadPix) {
+              const img = document.createElement('img');
+              img.alt = 'QR Code PIX';
+              img.src =
+                'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' +
+                encodeURIComponent(payloadPix);
+              pixQr.appendChild(img);
+            }
+          }
+
+          pixCard.hidden = false;
+          return true;
         };
 
         form.addEventListener('submit', async (event) => {
@@ -1254,62 +1327,7 @@
               throw new Error(data && data.error ? data.error : 'Não foi possível gerar o PIX.');
             }
 
-            const extractPixPayload = (pix) => {
-              if (!pix || typeof pix !== 'object') return '';
-              return (
-                pix.payload ||
-                pix.copy_paste ||
-                pix.copia_cola ||
-                pix.code ||
-                pix.qr_code_text ||
-                ''
-              );
-            };
 
-            const extractQrBase64 = (pix) => {
-              if (!pix || typeof pix !== 'object') return '';
-              return pix.qr_code_base64 || pix.qr_code_image || pix.qr_code || '';
-            };
-
-            const applyPix = (pixData) => {
-              const payloadPix = extractPixPayload(pixData && pixData.pix);
-              const qrBase64 = extractQrBase64(pixData && pixData.pix);
-              if (!payloadPix && !qrBase64) return false;
-
-              pixCode.value = payloadPix || '';
-              pixTransaction.textContent = pixData && pixData.id
-                ? `Transação: ${pixData.id}`
-                : 'Transação criada com sucesso.';
-
-              if (pixQr) {
-                pixQr.innerHTML = '';
-                if (qrBase64) {
-                  const img = document.createElement('img');
-                  img.alt = 'QR Code PIX';
-                  img.src = qrBase64.startsWith('data:') ? qrBase64 : `data:image/png;base64,${qrBase64}`;
-                  pixQr.appendChild(img);
-                } else if (window.QRCode && payloadPix) {
-                  new QRCode(pixQr, {
-                    text: payloadPix,
-                    width: 180,
-                    height: 180,
-                    colorDark: '#111111',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.M,
-                  });
-                } else if (payloadPix) {
-                  const img = document.createElement('img');
-                  img.alt = 'QR Code PIX';
-                  img.src =
-                    'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' +
-                    encodeURIComponent(payloadPix);
-                  pixQr.appendChild(img);
-                }
-              }
-
-              pixCard.hidden = false;
-              return true;
-            };
 
             if (!applyPix(data)) {
               if (data.id) {
@@ -1319,7 +1337,7 @@
                 showStatus('PIX criado. Buscando código...', false);
 
                 let attempts = 0;
-                const maxAttempts = 3;
+                const maxAttempts = 10;
                 const poll = async () => {
                   attempts += 1;
                   try {
@@ -1332,13 +1350,13 @@
                   } catch (err) {}
 
                   if (attempts < maxAttempts) {
-                    setTimeout(poll, 2000);
+                    setTimeout(poll, 2500);
                   } else {
                     showStatus('PIX pendente. Consulte no painel do gateway.', true);
                   }
                 };
 
-                setTimeout(poll, 2000);
+                setTimeout(poll, 2500);
                 return;
               }
 
@@ -1353,6 +1371,21 @@
             setLoading(false);
           }
         });
+
+        if (pixRefresh) {
+          pixRefresh.addEventListener('click', async () => {
+            if (!lastTransactionId) return;
+            const fresh = await fetchPixById(lastTransactionId);
+            if (fresh && applyPix(fresh)) {
+              const selectedPlan = form.querySelector('input[name="plan"]:checked');
+              const planKey = selectedPlan ? selectedPlan.value : 'mensal';
+              const plan = planMap[planKey] || planMap.mensal;
+              showStatus(`PIX do ${plan.label} pronto!`, false);
+            } else {
+              showStatus('PIX pendente. Consulte no painel do gateway.', true);
+            }
+          });
+        }
 
         if (pixCopy) {
           pixCopy.addEventListener('click', async () => {
@@ -1407,4 +1440,20 @@
     </script>
   </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
