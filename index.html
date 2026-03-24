@@ -1401,6 +1401,7 @@
               ? window.crypto.randomUUID()
               : `ulv_${Date.now()}_${Math.random().toString(16).slice(2)}`);
 
+          const gatewayMethod = paymentMethod === 'card' ? 'CREDIT_CARD' : 'PIX';
           const payload = {
             name: String(formData.get('name') || '').trim(),
             email: String(formData.get('email') || '').trim(),
@@ -1413,6 +1414,7 @@
             amount: amountCents,
             webhook_url: webhookUrl,
             external_id: externalId,
+            payment_method: gatewayMethod,
           };
           const productMap = window.ZEROONEPAY_PRODUCT_IDS || {};
           const productId = productMap[planKey];

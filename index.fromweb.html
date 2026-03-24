@@ -1278,6 +1278,18 @@
           const documentRaw = String(formData.get('document') || '').trim();
           const documentDigits = documentRaw.replace(/\D+/g, '');
           const inferredDocumentType = documentDigits.length === 14 ? 'CNPJ' : 'CPF';
+          const academySelected = academyToggle ? academyToggle.checked : false;
+          const total = plan.price + (academySelected ? academy.price : 0);
+          const amountCents = Math.round(total * 100);
+          const webhookBase =
+            window.ZEROONEPAY_WEBHOOK_URL || `${window.location.origin}/api/zeroonepay-webhook`;
+          const isLocalhost =
+            window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const webhookUrl =
+            !isLocalhost && webhookBase.startsWith('http://')
+              ? webhookBase.replace(/^http:\/\//, 'https://')
+              : webhookBase;
+          const gatewayMethod = paymentMethod === 'card' ? 'CREDIT_CARD' : 'PIX';
 
           const externalId =
             (window.crypto && typeof window.crypto.randomUUID === 'function'
@@ -1292,8 +1304,11 @@
             document_type: inferredDocumentType,
             document: documentRaw,
             plan: planKey,
-            academy: academyToggle ? academyToggle.checked : false,
+            academy: academySelected,
+            amount: amountCents,
+            webhook_url: webhookUrl,
             external_id: externalId,
+            payment_method: gatewayMethod,
           };
 
           if (
