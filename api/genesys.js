@@ -5,6 +5,35 @@ module.exports = async (req, res) => {
   res.setHeader('X-Genesys-Handler', 'api/genesys.js');
   res.setHeader('X-Genesys-Handler-Version', '2026-03-24');
 
+  if (req.method === 'GET') {
+    const apiSecret = process.env.GENESYS_API_SECRET;
+    if (!apiSecret) {
+      res.status(500).json({ error: 'GENESYS_API_SECRET não configurado no servidor.' });
+      return;
+    }
+    const baseUrl = (process.env.GENESYS_BASE_URL || 'https://api.genesys.finance').replace(/\/+$/, '');
+    const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'));
+    const id = (req.query && req.query.id) || url.searchParams.get('id');
+    if (!id) {
+      res.status(400).json({ error: 'ID da transação não informado.' });
+      return;
+    }
+    try {
+      const response = await fetch(baseUrl + '/v1/transactions/' + id, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-secret': apiSecret,
+        },
+      });
+      const data = await response.json().catch(() => null);
+      res.status(response.status).json(data || { error: 'Resposta inválida do gateway.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Falha ao conectar no gateway.' });
+    }
+    return;
+  }
+
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Método não permitido.' });
     return;
@@ -171,6 +200,8 @@ module.exports = async (req, res) => {
     res.status(500).json({ error: 'Falha ao conectar no gateway.' });
   }
 };
+
+
 
 
 
