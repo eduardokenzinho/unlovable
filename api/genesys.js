@@ -8,14 +8,14 @@ module.exports = async (req, res) => {
   if (req.method === 'GET') {
     const apiSecret = process.env.GENESYS_API_SECRET;
     if (!apiSecret) {
-      res.status(500).json({ error: 'GENESYS_API_SECRET nÃ£o configurado no servidor.' });
+      res.status(500).json({ error: 'GENESYS_API_SECRET não configurado no servidor.' });
       return;
     }
     const baseUrl = (process.env.GENESYS_BASE_URL || 'https://api.genesys.finance').replace(/\/+$/, '');
     const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'));
     const id = (req.query && req.query.id) || url.searchParams.get('id');
     if (!id) {
-      res.status(400).json({ error: 'ID da transaÃ§Ã£o nÃ£o informado.' });
+      res.status(400).json({ error: 'ID da transação não informado.' });
       return;
     }
     try {
@@ -27,7 +27,22 @@ module.exports = async (req, res) => {
         },
       });
       const data = await response.json().catch(() => null);
-      res.status(response.status).json(data || { error: 'Resposta invÃ¡lida do gateway.' });
+      if (data && typeof data === 'object' && !data.pix) {
+        try {
+          const pixRes = await fetch(baseUrl + '/v1/transactions/' + id + '/pix', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'api-secret': apiSecret,
+            },
+          });
+          const pixData = await pixRes.json().catch(() => null);
+          if (pixData && typeof pixData === 'object') {
+            data.pix = pixData;
+          }
+        } catch (err) {}
+      }
+      res.status(response.status).json(data || { error: 'Resposta inválida do gateway.' });
     } catch (error) {
       res.status(500).json({ error: 'Falha ao conectar no gateway.' });
     }
@@ -35,7 +50,7 @@ module.exports = async (req, res) => {
   }
 
   if (req.method !== 'POST') {
-    res.status(405).json({ error: 'MÃ©todo nÃ£o permitido.' });
+    res.status(405).json({ error: 'Método não permitido.' });
     return;
   }
 
@@ -85,7 +100,7 @@ module.exports = async (req, res) => {
 
   const apiSecret = process.env.GENESYS_API_SECRET;
   if (!apiSecret) {
-    res.status(500).json({ error: 'GENESYS_API_SECRET nÃ£o configurado no servidor.' });
+    res.status(500).json({ error: 'GENESYS_API_SECRET não configurado no servidor.' });
     return;
   }
 
@@ -195,11 +210,17 @@ module.exports = async (req, res) => {
       res.status(response.status).json({ ...finalData, debug });
       return;
     }
-    res.status(response.status).json({ error: 'Resposta invÃ¡lida do gateway.', debug });
+    res.status(response.status).json({ error: 'Resposta inválida do gateway.', debug });
   } catch (error) {
     res.status(500).json({ error: 'Falha ao conectar no gateway.' });
   }
 };
+
+
+
+
+
+
 
 
 
