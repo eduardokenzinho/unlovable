@@ -1333,32 +1333,20 @@
           return '';
         };
 
-        const extractPixPayload = (pix) => {
-          if (!pix || typeof pix !== 'object') return '';
-          return (
-            pix.payload ||
-            pix.copy_paste ||
-            pix.copia_cola ||
-            pix.code ||
-            pix.qr_code_text ||
-            ''
-          );
-        };
-
         const applyPix = (pixData) => {
           const payloadPix =
             pixData && typeof pixData.pix_payload === 'string' && looksLikePix(pixData.pix_payload)
               ? pixData.pix_payload
-              : extractPixPayload(pixData && pixData.pix) || deepFindString(pixData, looksLikePix);
+              : '';
           if (!payloadPix) return false;
 
           pixCode.value = payloadPix;
-          pixTransaction.textContent = pixData && pixData.id
-            ? `Transação: ${pixData.id}`
+          pixTransaction.textContent = pixData && pixData.transaction_id
+            ? `Transação: ${pixData.transaction_id}`
             : 'Transação criada com sucesso.';
 
-          if (pixData && pixData.id) {
-            lastTransactionId = pixData.id;
+          if (pixData && pixData.transaction_id) {
+            lastTransactionId = pixData.transaction_id;
           }
 
           if (pixQr) {
@@ -1457,10 +1445,18 @@
 
 
 
+            if (data && data.pix_payload == null) {
+              showStatus('Gerando Pix...', true);
+            }
+
+            if (data && data.transaction_id) {
+              lastTransactionId = data.transaction_id;
+            }
+
             if (!applyPix(data)) {
-              if (data.id) {
+              if (data.transaction_id) {
                 pixCode.value = '';
-                pixTransaction.textContent = `Transação: ${data.id} (aguardando PIX)`;
+                pixTransaction.textContent = `Transação: ${data.transaction_id} (aguardando PIX)`;
                 pixCard.hidden = false;
                 showStatus('PIX criado. Buscando código...', false);
 
@@ -1469,7 +1465,7 @@
                 const poll = async () => {
                   attempts += 1;
                   try {
-                    const res = await fetch(`/api/genesys?id=${encodeURIComponent(data.id)}`);
+                    const res = await fetch(`/api/genesys?id=${encodeURIComponent(data.transaction_id)}`);
                     const fresh = await res.json().catch(() => null);
                     if (fresh && applyPix(fresh)) {
                       showStatus(`PIX do ${plan.label} pronto!`, false);
@@ -1480,7 +1476,10 @@
                   if (attempts < maxAttempts) {
                     setTimeout(poll, 2500);
                   } else {
-                    showStatus('Gerando Pix... Por favor, clique no botão "Buscar PIX" em instantes', true);
+                    showStatus(
+                      'O sistema PIX está processando seu pedido. Clique em "Buscar PIX" em 30 segundos ou chame no suporte',
+                      true,
+                    );
                   }
                 };
 

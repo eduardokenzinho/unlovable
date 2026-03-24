@@ -125,24 +125,25 @@ module.exports = async (req, res) => {
       });
       const data = await response.json().catch(() => null);
       console.log('RESPOSTA_GATEWAY:', JSON.stringify(data, null, 2));
-      if (data && typeof data === 'object' && !data.pix) {
-        try {
-          const pixRes = await fetch(baseUrl + '/v1/transactions/' + id + '/pix', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'api-secret': apiSecret,
-            },
-          });
-          const pixData = await pixRes.json().catch(() => null);
-          if (pixData && typeof pixData === 'object') {
-            data.pix = pixData;
-          }
-        } catch (err) {}
+      if (!response.ok) {
+        res.status(response.status).json({
+          success: false,
+          error: 'Falha ao consultar a transação no gateway.',
+        });
+        return;
       }
-      res.status(response.status).json(normalizePix(sanitizePix(data)) || { error: 'Resposta inválida do gateway.' });
+      const normalized = normalizePix(sanitizePix(data));
+      const pixPayload = normalized && normalized.pix && normalized.pix.payload ? normalized.pix.payload : null;
+      const transactionId = (normalized && normalized.id) || (data && data.id) || id || null;
+      const status = (normalized && normalized.status) || (data && data.status) || null;
+      res.status(response.status).json({
+        success: true,
+        transaction_id: transactionId,
+        pix_payload: pixPayload || null,
+        status,
+      });
     } catch (error) {
-      res.status(500).json({ error: 'Falha ao conectar no gateway.' });
+      res.status(500).json({ success: false, error: 'Falha ao conectar no gateway.' });
     }
     return;
   }
@@ -272,6 +273,13 @@ module.exports = async (req, res) => {
 
     const data = await response.json().catch(() => null);
     console.log('RESPOSTA_GATEWAY:', JSON.stringify(data, null, 2));
+    if (!response.ok) {
+      res.status(response.status).json({
+        success: false,
+        error: 'Não foi possível criar a transação no gateway.',
+      });
+      return;
+    }
     const debug = {
       handler: 'api/genesys.js',
       webhook_sent: Boolean(webhookUrl),
@@ -285,6 +293,12 @@ module.exports = async (req, res) => {
       if (!normalized || typeof normalized !== 'object') return false;
       const pix = normalized.pix;
       return Boolean(pix && typeof pix === 'object' && pix.payload);
+    };
+    const getPixPayload = (value) => {
+      if (!value || typeof value !== 'object') return null;
+      const pix = value.pix && typeof value.pix === 'object' ? value.pix : null;
+      if (pix && typeof pix.payload === 'string') return pix.payload;
+      return null;
     };
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     if (data && typeof data === 'object' && data.id) {
@@ -303,22 +317,7 @@ module.exports = async (req, res) => {
         }
       } catch (err) {}
 
-      if (finalData && typeof finalData === 'object' && !finalData.pix) {
-        try {
-          const pixRes = await fetch(`${baseUrl}/v1/transactions/${data.id}/pix`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'api-secret': apiSecret,
-            },
-          });
-          const pixData = await pixRes.json().catch(() => null);
-          if (pixData && typeof pixData === 'object') {
-            finalData.pix = pixData;
-            debug.pix_fetched = true;
-          }
-        } catch (err) {}
-      }
+      
 
       if (!hasPixPayload(finalData)) {
         const maxAttempts = 10;
@@ -333,44 +332,38 @@ module.exports = async (req, res) => {
               },
             });
             const details = await detailsRes.json().catch(() => null);
-            if (details && typeof details === 'object') {
-              finalData = details;
+            const detailsRoot = details && details.data && typeof details.data === 'object' ? details.data : details;
+            if (detailsRoot && typeof detailsRoot === 'object') {
+              finalData = detailsRoot;
               debug.details_fetched = true;
             }
+            const status = detailsRoot && detailsRoot.status ? detailsRoot.status : details && details.status;
+            const pixPresent =
+              Boolean(detailsRoot && detailsRoot.pix && detailsRoot.pix.payload) ||
+              Boolean(details && details.pix && details.pix.payload);
+            console.log('STATUS_DA_CONSULTA:', status, 'PIX_PRESENTE:', pixPresent);
           } catch (err) {}
-
-          if (finalData && typeof finalData === 'object' && !finalData.pix) {
-            try {
-              const pixRes = await fetch(`${baseUrl}/v1/transactions/${data.id}/pix`, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'api-secret': apiSecret,
-                },
-              });
-              const pixData = await pixRes.json().catch(() => null);
-              if (pixData && typeof pixData === 'object') {
-                finalData.pix = pixData;
-                debug.pix_fetched = true;
-              }
-            } catch (err) {}
-          }
 
           if (hasPixPayload(finalData)) break;
         }
       }
     }
 
-    if (finalData && typeof finalData === 'object') {
-      const normalized = normalizePix(sanitizePix(finalData));
-      const pixPayload = normalized && normalized.pix && normalized.pix.payload ? normalized.pix.payload : undefined;
-      res.status(response.status).json({ ...normalized, pix_payload: pixPayload, debug });
-      return;
-    }
-
-    res.status(response.status).json({ error: 'Resposta inválida do gateway.', debug });
+    const normalized = normalizePix(sanitizePix(finalData));
+    const transactionId =
+      (normalized && normalized.id) || (finalData && finalData.id) || (data && data.id) || null;
+    const status =
+      (normalized && normalized.status) || (finalData && finalData.status) || (data && data.status) || null;
+    const pixPayload = getPixPayload(normalized);
+    const finalResponse = {
+      success: true,
+      transaction_id: transactionId,
+      pix_payload: pixPayload || null,
+      status,
+    };
+    res.status(response.status).json(finalResponse);
   } catch (error) {
-    res.status(500).json({ error: 'Falha ao conectar no gateway.' });
+    res.status(500).json({ success: false, error: 'Falha ao conectar no gateway.' });
   }
 };
 
