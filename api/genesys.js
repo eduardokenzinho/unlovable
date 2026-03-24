@@ -4,12 +4,22 @@ module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('X-Genesys-Handler', 'api/genesys.js');
 
+  try {
+
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Método não permitido.' });
     return;
   }
 
-  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
+  let body = req.body;
+  if (typeof body === 'string') {
+    try {
+      body = JSON.parse(body || '{}');
+    } catch (parseError) {
+      body = {};
+    }
+  }
+  body = body || {};
 
   const name = String(body.name || '').trim();
   const email = String(body.email || '').trim();
@@ -124,7 +134,12 @@ module.exports = async (req, res) => {
     const data = await response.json().catch(() => null);
     res.status(response.status).json(data || { error: 'Resposta inválida do gateway.' });
   } catch (error) {
-    res\r\n      .status(500)\r\n      .json({ error: 'Falha ao conectar no gateway.', debug: { webhook_disabled: true, handler: 'api/genesys.js' } });
+    res.status(500).json({ error: 'Falha ao conectar no gateway.' });
+  }
+  } catch (error) {
+    console.error('genesys handler error', error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 };
+
 
