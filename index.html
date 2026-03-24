@@ -1387,7 +1387,16 @@
 
         if (pixCopy) {
           pixCopy.addEventListener('click', async () => {
-            if (!pixCode.value) return;
+            if (!pixCode.value && lastTransactionId) {
+              const fresh = await fetchPixById(lastTransactionId);
+              if (fresh && applyPix(fresh)) {
+                showStatus('Código PIX atualizado.', false);
+              }
+            }
+            if (!pixCode.value) {
+              showStatus('Código PIX ainda não disponível. Tente novamente.', true);
+              return;
+            }
             try {
               await navigator.clipboard.writeText(pixCode.value);
               pixCopy.textContent = 'Copiado!';
@@ -1398,6 +1407,8 @@
               pixCode.select();
               document.execCommand('copy');
             }
+          });
+        }
           });
         }
 
@@ -1447,6 +1458,9 @@
     </script>
   </body>
 </html>
+
+
+
 
 
 
