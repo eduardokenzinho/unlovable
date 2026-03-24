@@ -281,8 +281,26 @@ module.exports = async (req, res) => {
       body: JSON.stringify(gatewayPayload),
     });
 
+    const contentType = (response.headers.get('content-type') || '').toLowerCase();
     const text = await response.text();
-    res.status(response.status || 200).send(text);
+    const status = response.status || 502;
+
+    if (response.ok) {
+      res.status(status).send(text);
+      return;
+    }
+
+    if (contentType.includes('application/json')) {
+      res.status(status).send(text);
+      return;
+    }
+
+    const snippet = text ? text.slice(0, 800) : '';
+    res.status(status).json({
+      success: false,
+      gateway_status: status,
+      gateway_body: snippet,
+    });
   } catch (err) {
     console.error('ZEROONEPAY_HANDLER_ERROR', err);
     res.status(500).json({ error: 'Erro interno no servidor.' });
