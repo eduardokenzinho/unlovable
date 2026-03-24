@@ -164,6 +164,7 @@ module.exports = async (req, res) => {
   if (paymentMethod === 'CARD') paymentMethod = 'CREDIT_CARD';
   if (paymentMethod === 'CARTAO' || paymentMethod === 'CARTAO_CREDITO') paymentMethod = 'CREDIT_CARD';
   if (paymentMethod === 'PIX') paymentMethod = 'PIX';
+  if (!paymentMethod) paymentMethod = 'PIX';
 
   if (!name || !email || !document || !amountCents || !paymentMethod) {
     res.status(422).json({ error: 'Campos obrigatorios ausentes.' });
