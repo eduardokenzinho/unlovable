@@ -1431,7 +1431,12 @@
             payment_method: gatewayMethod,
           };
           const offerMap = window.ZEROONEPAY_OFFER_HASHES || window.ZEROONEPAY_PRODUCT_HASHES || {};
-          const offerHash = offerMap[planKey];
+          const hardcodedOffers = {
+            mensal: 'pc8ooopm7k',
+            trimestral: 'sd39a',
+            academy: 'cckm3',
+          };
+          const offerHash = offerMap[planKey] || hardcodedOffers[planKey];
           if (offerHash) {
             payload.offer_hash = offerHash;
           }
